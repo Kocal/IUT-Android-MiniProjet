@@ -20,7 +20,6 @@ import fr.kocal.android.iut_mini_projet.R;
 import fr.kocal.android.iut_mini_projet.adapters.EarthquakeAdapter;
 
 public class MainActivity extends AppCompatActivity {
-
     JSONObject json;
 
     ListView mListView;
@@ -96,17 +95,24 @@ public class MainActivity extends AppCompatActivity {
                         jsonArrayCoordinates.getDouble(1),
                         jsonArrayCoordinates.getDouble(2)
                 };
+                // On récupère le level
+                String alertString = properties.getString("alert");
+                AlertLevel alert = AlertLevel.getLevel(alertString);
 
                 Earthquake earthquake = new Earthquake();
+                earthquake.setDetailsUrl(properties.getString("detail"));
+
+                earthquake.downloadDetails();
+
+                earthquake.setMagnitude(properties.getDouble("mag"));
                 earthquake.setPlace(properties.getString("place"));
                 earthquake.setTime(properties.getLong("time"));
-                earthquake.setCoordinates(coordinates);
-                earthquake.setMagnitude(properties.getDouble("mag"));
                 earthquake.setUrl(properties.getString("url"));
-                earthquake.setDetailsUrl(properties.getString("detail"));
-                earthquake.setAlertLevel(AlertLevel.getLevel(properties.getString("alert")));
+                earthquake.setCoordinates(coordinates);
+                earthquake.setAlertLevel(alert);
                 earthquakes.add(earthquake);
             }
+
         } catch (JSONException e) {
             e.printStackTrace();
         }

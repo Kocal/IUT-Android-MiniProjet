@@ -59,7 +59,6 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
         String coordinatesString = String.format(getContext().getString(R.string.coordinates),
                 coordinates[0], coordinates[1]);
 
-        // On remplit !
         viewHolder.mPlace.setText(earthquake.getPlace());
         viewHolder.mDate.setText(dateString);
         viewHolder.mMagnitude.setText(magnitudeString);

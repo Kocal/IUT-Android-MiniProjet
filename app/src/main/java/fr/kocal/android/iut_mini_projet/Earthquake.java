@@ -1,10 +1,14 @@
 package fr.kocal.android.iut_mini_projet;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 
 import org.json.JSONObject;
 
 import java.util.Arrays;
+
+import fr.kocal.android.iut_mini_projet.asyncTasks.AsyncDownloader;
+import fr.kocal.android.iut_mini_projet.eventListeners.OnContentDownloaded;
 
 /**
  * Created by kocal on 15/03/16.
@@ -101,5 +105,14 @@ public class Earthquake {
                 ", details=" + details +
                 ", bm=" + bm +
                 '}';
+    }
+
+    public void downloadDetails() {
+        new AsyncDownloader<JSONObject>(JSONObject.class, new OnContentDownloaded<JSONObject>() {
+            @Override
+            public void onDownloaded(JSONObject jsonObject) {
+                Log.v("Kocal", jsonObject.toString());
+            }
+        }).execute(this.detailsUrl);
     }
 }
