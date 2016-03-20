@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">IUT-Mini-Projet</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="title_activity_splash_screen">SplashScreenActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="titleDisplayingEarthquakes">Derniers tremblements de terre</string>
+    <string name="splashMessageCheckConnectivity">Vérification de la connectivité à l\'Internet</string>
+    <string name="splashMessageNoConnection">Impossible de se connecter à internet, vérifiez votre connexion...</string>
+    <string name="splashMessageGotConnection">Connexion à l\'Internet réussie</string>
+    <string name="splashMessageFetchLastEarthquakes">Récupération des derniers tremblements de terre en cours...</string>
+    <string name="splashMessageFetchLastEarthquakesSuccess">Récupération des derniers tremblements de terre terminée !</string>
+    <string name="splashMessageFetchLastEarthquakesError">Un problème est survenu lors de la récupération des derniers tremblements de terre</string>
+    <!--<string name="coordinates">%1$.3f °N, %2$.3f °E depth=%3$.2f km</string>-->
+    <string name="magnitude">Magnitude : %1$.2f </string>
+    <string name="coordinates">Localisation : %1$.3f °N, %2$.3f °E</string>
+    <string name="separator"> • </string>
+</resources>
