@@ -1,6 +1,7 @@
 package fr.kocal.android.iut_mini_projet.activities;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -15,6 +16,7 @@ import fr.kocal.android.iut_mini_projet.Earthquake;
 import fr.kocal.android.iut_mini_projet.R;
 
 public class EarthquakeActivity extends AppCompatActivity implements OnMapReadyCallback {
+
     private GoogleMap mMap;
 
     Earthquake earthquake = null;
@@ -25,10 +27,9 @@ public class EarthquakeActivity extends AppCompatActivity implements OnMapReadyC
         setContentView(R.layout.activity_earthquake);
 
         earthquake = (Earthquake) getIntent().getSerializableExtra("earthquake");
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+
         initToolbar();
+        initMaps();
     }
 
     private void initToolbar() {
@@ -37,13 +38,27 @@ public class EarthquakeActivity extends AppCompatActivity implements OnMapReadyC
         getSupportActionBar().setTitle(earthquake.getPlace());
     }
 
+    private void initMaps() {
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+    }
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        Double[] coordinates = earthquake.getCoordinates();
 
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        LatLng place = new LatLng(coordinates[1], coordinates[0]);
+        mMap.addMarker(new MarkerOptions().position(place).title("Marker in Sydney"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(place, mMap.getMinZoomLevel()));
+
+
+        (new Handler()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mMap.animateCamera(CameraUpdateFactory.zoomTo(5));
+            }
+        }, 200);
     }
 }
