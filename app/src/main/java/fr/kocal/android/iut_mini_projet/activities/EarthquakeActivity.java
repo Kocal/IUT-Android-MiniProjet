@@ -4,7 +4,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -21,10 +24,25 @@ import fr.kocal.android.iut_mini_projet.R;
 
 public class EarthquakeActivity extends AppCompatActivity implements OnMapReadyCallback {
 
+    /**
+     * Earthquake à afficher
+     */
     Earthquake earthquake = null;
-    String sLocalisation, sMagnitude, sDate;
 
-    private TextView mLocalisation, mMagnitude, mDate;
+    /**
+     * Infos
+     */
+    String sLocalisation, sMagnitude, sDate, sUrl;
+
+    /**
+     * UI elments
+     */
+    private TextView mLocalisation, mMagnitude, mDate, mUrl;
+
+    /**
+     * Map Google Maps ;-))
+     */
+    private SupportMapFragment fMap;
     private GoogleMap mMap;
 
     @Override
@@ -34,36 +52,52 @@ public class EarthquakeActivity extends AppCompatActivity implements OnMapReadyC
 
         earthquake = (Earthquake) getIntent().getSerializableExtra("earthquake");
 
+        if (earthquake == null) {
+            Toast.makeText(EarthquakeActivity.this, "Il y a eu un problème lors de l'affichage du tremblement de terre", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
         initToolbar();
         initValues();
-        initMaps();
+
+        // Sinon ça peut bloquer le thread principal, autant charger la map en asynchrone
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                initMaps();
+            }
+        }).run();
     }
 
     private void initToolbar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(earthquake.getPlace());
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     private void initMaps() {
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+        fMap = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        fMap.getView().setVisibility(View.INVISIBLE);
+        fMap.getMapAsync(this);
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        Double[] coordinates = earthquake.getCoordinates();
 
+        Double[] coordinates = earthquake.getCoordinates();
         LatLng place = new LatLng(coordinates[1], coordinates[0]);
+
+        fMap.getView().setVisibility(View.VISIBLE);
         mMap.addMarker(new MarkerOptions().position(place).title("Tremblement de terre"));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(place, mMap.getMinZoomLevel()));
 
         (new Handler()).postDelayed(new Runnable() {
             @Override
             public void run() {
-                mMap.animateCamera(CameraUpdateFactory.zoomTo(6));
+                mMap.animateCamera(CameraUpdateFactory.zoomTo(4));
             }
         }, 200);
     }
@@ -72,6 +106,7 @@ public class EarthquakeActivity extends AppCompatActivity implements OnMapReadyC
         mLocalisation = (TextView) findViewById(R.id.localisation);
         mMagnitude = (TextView) findViewById(R.id.magnitude);
         mDate = (TextView) findViewById(R.id.date);
+        mUrl = (TextView) findViewById(R.id.url);
 
         // Formatage des coordonnées
         Double[] coordinates = earthquake.getCoordinates();
@@ -84,11 +119,27 @@ public class EarthquakeActivity extends AppCompatActivity implements OnMapReadyC
         // Formatage de la date
         Date date = new Date(earthquake.getTime());
         DateFormat dateFormat = DateFormat.getDateInstance();
-        sDate = dateFormat.format(date);
+        sDate = String.format(getString(R.string.date), dateFormat.format(date));
+
+        // Url
+        sUrl = earthquake.getUrl();
 
         // Fill
         mLocalisation.setText(sLocalisation);
         mMagnitude.setText(sMagnitude);
         mDate.setText(sDate);
+        mUrl.setText(sUrl);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

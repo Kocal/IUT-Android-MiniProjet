@@ -18,4 +18,5 @@
     <string name="separator"> • </string>
     <string name="about_earthquake">À propos du tremblement de terre</string>
     <string name="label_informationsGenerales">Informations générales</string>
+    <string name="date">Date : %s</string>
 </resources>
