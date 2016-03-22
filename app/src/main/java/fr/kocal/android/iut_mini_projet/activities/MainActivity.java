@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,6 +27,11 @@ public class MainActivity extends AppCompatActivity {
      * JSON qui contient les derniers tremblements de terre
      */
     JSONObject json;
+
+    /**
+     * ArrayList qui contient les tremblements de terre
+     */
+    ArrayList<Earthquake> earthquakes;
 
     /**
      * Liste les tremblements de terre
@@ -61,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Met à jour le titre de la toolbar.
-     * <p/>
+     * <p>
      * Soit on récupère le titre du JSON, soit on affiche un titre par défaut
      */
     private void updateToolbarTitle() {
@@ -96,16 +100,16 @@ public class MainActivity extends AppCompatActivity {
      */
     private void initListView() {
         mListView = (ListView) findViewById(R.id.listView);
-        final ArrayList<Earthquake> earthquakes = extractEarthquakesFromJson();
+        earthquakes = extractEarthquakesFromJson();
         EarthquakeAdapter earthquakeAdapter = new EarthquakeAdapter(MainActivity.this, earthquakes);
 
         mListView = (ListView) findViewById(R.id.listView);
         mListView.setAdapter(earthquakeAdapter);
+        mListView.setFastScrollEnabled(true);
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Earthquake earthquake = (Earthquake) mListView.getItemAtPosition(position);
-                Log.v("Kocal", earthquake.getPlace());
                 Intent i = new Intent(MainActivity.this, EarthquakeActivity.class);
                 i.putExtra("earthquake", earthquake);
                 startActivity(i);
@@ -160,6 +164,12 @@ public class MainActivity extends AppCompatActivity {
         return earthquakes;
     }
 
+    private void displayOnMap() {
+        Intent i = new Intent(MainActivity.this, ShowOnMaps.class);
+        i.putExtra("earthquakes", earthquakes);
+        startActivity(i);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -174,9 +184,12 @@ public class MainActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (id) {
+            case R.id.action_settings:
+                return true;
+            case R.id.action_display_on_map:
+                displayOnMap();
+                return true;
         }
 
         return super.onOptionsItemSelected(item);

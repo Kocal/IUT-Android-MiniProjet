@@ -16,7 +16,6 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true" />
 
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -87,6 +86,4 @@
             tools:context="fr.kocal.android.iut_mini_projet.activities.MapsActivity" />
 
     </LinearLayout>
-
-
 </RelativeLayout>

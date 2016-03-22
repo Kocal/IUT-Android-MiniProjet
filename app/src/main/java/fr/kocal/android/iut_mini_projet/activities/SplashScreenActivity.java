@@ -100,7 +100,6 @@ public class SplashScreenActivity extends AppCompatActivity {
 
                 if(jsonObject == null) {
                     mLoaderMessage.setText(getString(R.string.splashMessageFetchLastEarthquakesError));
-
                     return;
                 }
 
