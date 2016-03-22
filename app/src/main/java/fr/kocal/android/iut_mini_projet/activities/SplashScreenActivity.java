@@ -7,7 +7,6 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,10 +34,9 @@ public class SplashScreenActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
 
+        setBackgroundColor();
         initProgressBar();
-        getWindow().getDecorView().setBackgroundColor(getColor(R.color.colorPrimaryDark));
-
-        mLoaderMessage.setText(getString(R.string.splashMessageCheckConnectivity));
+        initLoaderMessage();
 
         // On boucle afin de checker l'état de la connexion internet de l'utilisateur
         final Handler h = new Handler();
@@ -62,10 +60,17 @@ public class SplashScreenActivity extends AppCompatActivity {
      */
     private void initProgressBar() {
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
-        mLoaderMessage = (TextView) findViewById(R.id.loaderMessage);
-
         // On veut une couleur blanche pour le loader
         mProgressBar.getIndeterminateDrawable().setColorFilter(0xFFFFFFFF, android.graphics.PorterDuff.Mode.MULTIPLY);
+    }
+
+    private void setBackgroundColor() {
+        getWindow().getDecorView().setBackgroundColor(getColor(R.color.colorPrimaryDark));
+    }
+
+    private void initLoaderMessage() {
+        mLoaderMessage = (TextView) findViewById(R.id.loaderMessage);
+        mLoaderMessage.setText(getString(R.string.splashMessageCheckConnectivity));
     }
 
     /**
@@ -90,10 +95,12 @@ public class SplashScreenActivity extends AppCompatActivity {
             public void onDownloaded(Error error, JSONObject jsonObject) {
                 if(error != null) {
                     Toast.makeText(SplashScreenActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+                    return;
                 }
 
                 if(jsonObject == null) {
                     mLoaderMessage.setText(getString(R.string.splashMessageFetchLastEarthquakesError));
+
                     return;
                 }
 
