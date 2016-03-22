@@ -20,8 +20,14 @@ import fr.kocal.android.iut_mini_projet.R;
 import fr.kocal.android.iut_mini_projet.adapters.EarthquakeAdapter;
 
 public class MainActivity extends AppCompatActivity {
+    /**
+     * JSON qui contient les derniers tremblements de terre
+     */
     JSONObject json;
 
+    /**
+     * Liste les tremblements de terre
+     */
     ListView mListView;
 
     @Override
@@ -41,11 +47,19 @@ public class MainActivity extends AppCompatActivity {
         initListView();
     }
 
+    /**
+     * Initialise la toolbar
+     */
     private void initToolbar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
     }
 
+    /**
+     * Met à jour le titre de la toolbar.
+     *
+     * Soit on récupère le titre du JSON, soit on affiche un titre par défaut
+     */
     private void updateToolbarTitle() {
         try {
             // Soit on affiche le titre du JSON
@@ -57,6 +71,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Récupère le JSON envoyé par le SplashScreen et l'assigne dans l'attribut MainActivity::json
+     * @return boolean
+     */
     private boolean fetchJson() {
         try {
             json = new JSONObject(getIntent().getStringExtra("JSON"));
@@ -68,6 +86,9 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * Initialise la listview des tremblements de terre
+     */
     private void initListView() {
         mListView = (ListView) findViewById(R.id.listView);
         ArrayList<Earthquake> earthquakes = extractEarthquakesFromJson();
@@ -77,6 +98,10 @@ public class MainActivity extends AppCompatActivity {
         mListView.setAdapter(earthquakeAdapter);
     }
 
+    /**
+     * Extrait les tremblements de terre sous forme d'ArrayList du JSON
+     * @return ArrayList<Earthquake> les tremblements de terre
+     */
     private ArrayList<Earthquake> extractEarthquakesFromJson() {
         ArrayList<Earthquake> earthquakes = new ArrayList<>();
 
@@ -84,6 +109,8 @@ public class MainActivity extends AppCompatActivity {
             JSONArray features = json.getJSONArray("features");
 
             for (int i = 0; i < features.length(); i++) {
+                Earthquake earthquake = new Earthquake();
+
                 JSONObject feature = features.getJSONObject(i);
                 JSONObject properties = feature.getJSONObject("properties");
                 JSONObject geometry = feature.getJSONObject("geometry");
@@ -95,24 +122,21 @@ public class MainActivity extends AppCompatActivity {
                         jsonArrayCoordinates.getDouble(1),
                         jsonArrayCoordinates.getDouble(2)
                 };
+
                 // On récupère le level
                 String alertString = properties.getString("alert");
-                AlertLevel alert = AlertLevel.getLevel(alertString);
+                AlertLevel alert = AlertLevel.getColor(alertString);
 
-                Earthquake earthquake = new Earthquake();
-                earthquake.setDetailsUrl(properties.getString("detail"));
-
-                earthquake.downloadDetails();
-
-                earthquake.setMagnitude(properties.getDouble("mag"));
+                // :-)
                 earthquake.setPlace(properties.getString("place"));
+                earthquake.setMagnitude(properties.getDouble("mag"));
                 earthquake.setTime(properties.getLong("time"));
-                earthquake.setUrl(properties.getString("url"));
                 earthquake.setCoordinates(coordinates);
+                earthquake.setDetailsUrl(properties.getString("detail"));
+                earthquake.setUrl(properties.getString("url"));
                 earthquake.setAlertLevel(alert);
                 earthquakes.add(earthquake);
             }
-
         } catch (JSONException e) {
             e.printStackTrace();
         }

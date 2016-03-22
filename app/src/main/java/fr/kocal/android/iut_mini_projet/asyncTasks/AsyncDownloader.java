@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -16,36 +17,40 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import fr.kocal.android.iut_mini_projet.activities.MainActivity;
+import fr.kocal.android.iut_mini_projet.activities.SplashScreenActivity;
 import fr.kocal.android.iut_mini_projet.eventListeners.OnContentDownloaded;
 
 /**
- * TODO: Doc
  * À la base j'avais deux classes AsyncImageDownloader et AsyncJsonDownloader,
  * ainsi que deux listeners OnImageDownloaded et OnJsonDownloaded.
+ * <p/>
  * Avec la duplication de code et de fichiers, c'était ultra chiant et galère
  * de créer un Async${TYPE}Downloader et un On${TYPE}Downloaded pour chaque type.
+ * <p/>
  * J'ai donc créé une classe AsyncDownloader qui utilise les templates de Java afin de
  * gérer plusieurs types/classes facilement (comme String, JSONObject, ...).
- * <p>
- * Created by kocal on 20/03/16.
  */
 public class AsyncDownloader<T> extends AsyncTask<String, Integer, T> {
 
     /**
-     * TODO: Doc
+     * Type de ressource à télécharger
      */
     private final Class<T> type;
 
     /**
-     * TODO: Doc
+     * Callback qui sera exécuté quand le téléchargement sera terminé
      */
     private final OnContentDownloaded onContentDownloaded;
 
     /**
-     * TODO: Doc
-     *
-     * @param type                Type de données à renvoyer (null, String, JSONObject, BitMap)
-     * @param onContentDownloaded Event
+     * Message d'erreur
+     */
+    private String errorMessage;
+
+    /**
+     * @param type                Classe Java correspondant au type de données à renvoyer (String, JSONObject, BitMap)
+     * @param onContentDownloaded Callback exécuté à la fin du téléchargement
      */
     public AsyncDownloader(Class<T> type, OnContentDownloaded onContentDownloaded) {
         this.type = type;
@@ -53,8 +58,7 @@ public class AsyncDownloader<T> extends AsyncTask<String, Integer, T> {
     }
 
     /**
-     * TODO: DOC
-     *
+     * Télécharge la ressource sur internet
      * @param params
      * @return
      */
@@ -70,10 +74,7 @@ public class AsyncDownloader<T> extends AsyncTask<String, Integer, T> {
             url = new URL(params[0]);
         } catch (MalformedURLException e) {
             e.printStackTrace();
-        }
-
-        if (url == null) {
-            Log.e("AsyncDownloader", "L'URL n'a pas un format valide");
+            errorMessage = "L'URL n'a pas un format valide";
             return null;
         }
 
@@ -82,15 +83,12 @@ public class AsyncDownloader<T> extends AsyncTask<String, Integer, T> {
             urlConnection = (HttpURLConnection) url.openConnection();
 
             if (urlConnection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                Log.e("AsyncDownloader", "Le code de retour n'est pas valide");
+                errorMessage = "Le code de retour n'est pas valide : " + urlConnection.getResponseCode();
                 return null;
             }
         } catch (IOException e) {
             e.printStackTrace();
-        }
-
-        if (urlConnection == null) {
-            Log.e("AsyncDownloader", "Impossible d'ouvrir une connexion HTTP quand l'URL est : " + url.toString());
+            errorMessage = "Impossible d'ouvrir une connexion HTTP quand l'URL est : " + url.toString();
             return null;
         }
 
@@ -100,6 +98,8 @@ public class AsyncDownloader<T> extends AsyncTask<String, Integer, T> {
             output = this.readStream(is);
         } catch (IOException e) {
             e.printStackTrace();
+            errorMessage = "Impossible de lire le flux";
+            return null;
         } finally {
             urlConnection.disconnect();
         }
@@ -108,8 +108,7 @@ public class AsyncDownloader<T> extends AsyncTask<String, Integer, T> {
     }
 
     /**
-     * TODO: Doc
-     *
+     * Lit de contenu d'un InputStream
      * @param is
      * @return
      */
@@ -126,8 +125,7 @@ public class AsyncDownloader<T> extends AsyncTask<String, Integer, T> {
     }
 
     /**
-     * TODO: Doc
-     *
+     * Lit le flux d'un InputStream de type texte
      * @param is
      * @return
      */
@@ -144,14 +142,15 @@ public class AsyncDownloader<T> extends AsyncTask<String, Integer, T> {
             is.close();
         } catch (IOException e) {
             e.printStackTrace();
+            errorMessage = "Erreur pendant la lecture du flux";
+            return null;
         }
 
         return (T) buffer.toString();
     }
 
     /**
-     * TODO: Doc
-     *
+     * Lit le contenu d'un InputStream de type Image
      * @param is
      * @return
      */
@@ -163,14 +162,15 @@ public class AsyncDownloader<T> extends AsyncTask<String, Integer, T> {
             is.close();
         } catch (Exception e) {
             e.printStackTrace();
+            errorMessage = "Erreur pendant la lecture du flux";
+            return null;
         }
 
         return (T) bitmap;
     }
 
     /**
-     * TODO: Doc
-     *
+     * Lit le flux d'un InputStream de type texte et le convertit en JSONObject
      * @param is
      * @return
      */
@@ -189,12 +189,13 @@ public class AsyncDownloader<T> extends AsyncTask<String, Integer, T> {
     }
 
     /**
-     * TODO: Doc
-     *
+     * Exécute le callback et envoie possiblement une instance de Error ou pas
      * @param o
      */
     @Override
     protected void onPostExecute(T o) {
-        this.onContentDownloaded.onDownloaded(o);
+        this.onContentDownloaded.onDownloaded(
+                (errorMessage != null && !errorMessage.isEmpty() ? new Error(errorMessage) : null),
+                o);
     }
 }
