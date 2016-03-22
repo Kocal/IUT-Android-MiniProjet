@@ -6,7 +6,7 @@
 
     <color name="black_overlay">#66000000</color>
     <color name="colorWhite">#ffffff</color>
-    <color name="alertGreen">#00FF00</color>
-    <color name="alertYellow">#FFFF00</color>
-    <color name="alertRed">#FF0000</color>
+    <color name="alertGreen">#b9f6ca</color>
+    <color name="alertYellow">#ffff8d</color>
+    <color name="alertRed">#ffab91</color>
 </resources>

@@ -3,8 +3,11 @@ package fr.kocal.android.iut_mini_projet.activities;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -57,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Met à jour le titre de la toolbar.
-     *
+     * <p/>
      * Soit on récupère le titre du JSON, soit on affiche un titre par défaut
      */
     private void updateToolbarTitle() {
@@ -73,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Récupère le JSON envoyé par le SplashScreen et l'assigne dans l'attribut MainActivity::json
+     *
      * @return boolean
      */
     private boolean fetchJson() {
@@ -96,10 +100,18 @@ public class MainActivity extends AppCompatActivity {
 
         mListView = (ListView) findViewById(R.id.listView);
         mListView.setAdapter(earthquakeAdapter);
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Earthquake earthquake = (Earthquake) mListView.getItemAtPosition(position);
+                Log.v("Kocal", earthquake.getPlace());
+            }
+        });
     }
 
     /**
      * Extrait les tremblements de terre sous forme d'ArrayList du JSON
+     *
      * @return ArrayList<Earthquake> les tremblements de terre
      */
     private ArrayList<Earthquake> extractEarthquakesFromJson() {

@@ -11,6 +11,7 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
 
+import fr.kocal.android.iut_mini_projet.AlertLevel;
 import fr.kocal.android.iut_mini_projet.Earthquake;
 import fr.kocal.android.iut_mini_projet.R;
 import fr.kocal.android.iut_mini_projet.viewHolders.EarthquakeViewHolder;
@@ -63,6 +64,10 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
         viewHolder.mDate.setText(dateString);
         viewHolder.mMagnitude.setText(magnitudeString);
         viewHolder.mCoordinates.setText(coordinatesString);
+
+        if (earthquake.getAlertLevel() != AlertLevel.NO_COLOR) {
+            view.setBackgroundResource(earthquake.getAlertLevel().getColorId());
+        }
 
         return view;
     }
