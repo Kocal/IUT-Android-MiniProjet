@@ -5,6 +5,7 @@ import android.util.Log;
 
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 import fr.kocal.android.iut_mini_projet.asyncTasks.AsyncDownloader;
@@ -13,7 +14,7 @@ import fr.kocal.android.iut_mini_projet.eventListeners.OnContentDownloaded;
 /**
  * Created by kocal on 15/03/16.
  */
-public class Earthquake {
+public class Earthquake implements Serializable {
 
     /**
      * Lieu (nom)

@@ -1,5 +1,6 @@
 package fr.kocal.android.iut_mini_projet.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -95,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private void initListView() {
         mListView = (ListView) findViewById(R.id.listView);
-        ArrayList<Earthquake> earthquakes = extractEarthquakesFromJson();
+        final ArrayList<Earthquake> earthquakes = extractEarthquakesFromJson();
         EarthquakeAdapter earthquakeAdapter = new EarthquakeAdapter(MainActivity.this, earthquakes);
 
         mListView = (ListView) findViewById(R.id.listView);
@@ -105,6 +106,9 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Earthquake earthquake = (Earthquake) mListView.getItemAtPosition(position);
                 Log.v("Kocal", earthquake.getPlace());
+                Intent i = new Intent(MainActivity.this, EarthquakeActivity.class);
+                i.putExtra("earthquake", earthquake);
+                startActivity(i);
             }
         });
     }
