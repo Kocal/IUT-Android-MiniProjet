@@ -16,4 +16,6 @@
     <string name="magnitude">Magnitude : %1$.2f </string>
     <string name="coordinates">Localisation : %1$.3f °N, %2$.3f °E</string>
     <string name="separator"> • </string>
+    <string name="about_earthquake">À propos du tremblement de terre</string>
+    <string name="label_informationsGenerales">Informations générales</string>
 </resources>
