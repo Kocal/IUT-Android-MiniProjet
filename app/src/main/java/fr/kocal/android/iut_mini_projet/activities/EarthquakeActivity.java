@@ -61,7 +61,7 @@ public class EarthquakeActivity extends AppCompatActivity implements OnMapReadyC
         initToolbar();
         initValues();
 
-        // Sinon ça peut bloquer le thread principal, autant charger la map en asynchrone
+        // Sinon ça bloque le thread principal, et c'est chiant
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -79,7 +79,6 @@ public class EarthquakeActivity extends AppCompatActivity implements OnMapReadyC
 
     private void initMaps() {
         fMap = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        fMap.getView().setVisibility(View.INVISIBLE);
         fMap.getMapAsync(this);
     }
 
@@ -90,16 +89,9 @@ public class EarthquakeActivity extends AppCompatActivity implements OnMapReadyC
         Double[] coordinates = earthquake.getCoordinates();
         LatLng place = new LatLng(coordinates[1], coordinates[0]);
 
-        fMap.getView().setVisibility(View.VISIBLE);
         mMap.addMarker(new MarkerOptions().position(place).title("Tremblement de terre"));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(place, mMap.getMinZoomLevel()));
-
-        (new Handler()).postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mMap.animateCamera(CameraUpdateFactory.zoomTo(4));
-            }
-        }, 200);
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(4));
     }
 
     private void initValues() {
