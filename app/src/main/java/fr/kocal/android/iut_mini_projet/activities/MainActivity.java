@@ -2,6 +2,7 @@ package fr.kocal.android.iut_mini_projet.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -16,11 +17,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.logging.ErrorManager;
 
 import fr.kocal.android.iut_mini_projet.AlertLevel;
 import fr.kocal.android.iut_mini_projet.Earthquake;
 import fr.kocal.android.iut_mini_projet.R;
 import fr.kocal.android.iut_mini_projet.adapters.EarthquakeAdapter;
+import fr.kocal.android.iut_mini_projet.asyncTasks.AsyncDownloader;
+import fr.kocal.android.iut_mini_projet.eventListeners.OnContentDownloaded;
 
 public class MainActivity extends AppCompatActivity {
     /**
@@ -38,6 +42,11 @@ public class MainActivity extends AppCompatActivity {
      */
     ListView mListView;
 
+    /**
+     * Pour refresh la liste des tremblements de terre
+     */
+    SwipeRefreshLayout swipeContainer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
 
         updateToolbarTitle();
         initListView();
+        initSwipeRefresh();
     }
 
     /**
@@ -168,6 +178,38 @@ public class MainActivity extends AppCompatActivity {
         Intent i = new Intent(MainActivity.this, ShowOnMaps.class);
         i.putExtra("earthquakes", earthquakes);
         startActivity(i);
+    }
+
+    private void initSwipeRefresh() {
+        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                new AsyncDownloader<JSONObject>(JSONObject.class, new OnContentDownloaded<JSONObject>() {
+                    @Override
+                    public void onDownloaded(Error error, JSONObject jsonObject) {
+
+                        swipeContainer.setRefreshing(false);
+
+                        if(error != null) {
+                            Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        if(jsonObject != null) {
+                            json = jsonObject;
+                            initListView();
+                        }
+                    }
+                }).execute("http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_month.geojson");
+            }
+        });
+
+        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
     }
 
     @Override
