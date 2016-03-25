@@ -11,6 +11,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+
 import org.json.JSONObject;
 
 import fr.kocal.android.iut_mini_projet.R;
@@ -112,12 +116,25 @@ public class SplashScreenActivity extends AppCompatActivity {
      * Lance la MainActivity en lui passant du JSON
      * @param jsonObject
      */
-    public void launchMainActivity(JSONObject jsonObject) {
-        Intent i = new Intent(SplashScreenActivity.this, MainActivity.class);
+    public void launchMainActivity(final JSONObject jsonObject) {
+        final Intent i = new Intent(SplashScreenActivity.this, MainActivity.class);
 
         mLoaderMessage.setText(getString(R.string.splashMessageFetchLastEarthquakesSuccess));
-        i.putExtra("JSON", jsonObject.toString());
-        startActivity(i);
-        finish();
+
+        mLoaderMessage.setText(getString(R.string.splashMessageMapCreation));
+
+        // On initialise une map vide
+        SupportMapFragment fMap = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        fMap.getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(GoogleMap googleMap) {
+                mLoaderMessage.setText(getString(R.string.splashMessageMapCreationSuccess));
+
+                i.putExtra("JSON", jsonObject.toString());
+                startActivity(i);
+                finish();
+            }
+        });
+
     }
 }

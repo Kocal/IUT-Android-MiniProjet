@@ -76,14 +76,7 @@ public class EarthquakeActivity extends AppCompatActivity implements OnMapReadyC
 
         initToolbar();
         initValues();
-
-        // Sinon ça bloque le thread principal, et c'est chiant
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                initMaps();
-            }
-        }).run();
+        initMaps();
     }
 
     private void initToolbar() {
@@ -173,13 +166,6 @@ public class EarthquakeActivity extends AppCompatActivity implements OnMapReadyC
         mMap.addMarker(new MarkerOptions().position(place));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(place, mMap.getMinZoomLevel()));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(4));
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-            }
-        }).run();
     }
 
     @Override
