@@ -25,19 +25,19 @@
         tools:context="fr.kocal.android.iut_mini_projet.activities.MapsActivity" />
 
     <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/card_details"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/card_details"
-        app:cardElevation="8dp"
-        android:layout_marginTop="0dp"
         android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp">
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="0dp"
+        app:cardElevation="8dp">
 
         <!-- Main Content View -->
         <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="vertical"
             android:padding="8dp">
 
             <TextView
@@ -83,6 +83,14 @@
                 android:autoLink="web"
                 android:text="Small Text"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
+
+            <Button
+                android:id="@+id/buttonMoreDetails"
+                android:layout_gravity="end"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/more_details" />
 
         </LinearLayout>
     </android.support.v7.widget.CardView>

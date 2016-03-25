@@ -1,6 +1,8 @@
 package fr.kocal.android.iut_mini_projet.activities;
 
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
@@ -9,6 +11,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,6 +21,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.wallet.fragment.BuyButtonText;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -48,6 +52,7 @@ public class EarthquakeActivity extends AppCompatActivity implements OnMapReadyC
      * UI elements
      */
     private CardView mDetails;
+    private Button mMoreDetails;
     private TextView mLocalisation, mMagnitude, mDate, mUrl;
 
     /**
@@ -99,6 +104,7 @@ public class EarthquakeActivity extends AppCompatActivity implements OnMapReadyC
         mMagnitude = (TextView) findViewById(R.id.magnitude);
         mDate = (TextView) findViewById(R.id.date);
         mUrl = (TextView) findViewById(R.id.url);
+        mMoreDetails = (Button) findViewById(R.id.buttonMoreDetails);
 
         // Formatage des coordonnées
         Double[] coordinates = earthquake.getCoordinates();
@@ -116,11 +122,21 @@ public class EarthquakeActivity extends AppCompatActivity implements OnMapReadyC
         // Url
         sUrl = earthquake.getUrl();
 
+        // Création de l'intent pour le button
+        final Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(sUrl));
+
         // Fill
         mLocalisation.setText(sLocalisation);
         mMagnitude.setText(sMagnitude);
         mDate.setText(sDate);
-        mUrl.setText(sUrl);
+//        mUrl.setText(sUrl);
+        mMoreDetails.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(intent);
+            }
+        });
     }
 
     private void toggleDetails() {
