@@ -121,25 +121,28 @@ public class EarthquakeActivity extends AppCompatActivity implements OnMapReadyC
         mMagnitude.setText(sMagnitude);
         mDate.setText(sDate);
         mUrl.setText(sUrl);
+    }
 
-        mDetails.setVisibility(View.INVISIBLE);
-        mDetails.setAlpha(0f);
-        mDetails.setTranslationY(-mDetails.getHeight());
+    private void toggleDetails() {
+        if (mDetails.getVisibility() == View.GONE) {
+            menu.getItem(0).setIcon(iconLess);
+            showDetails();
+        } else {
+            menu.getItem(0).setIcon(iconMore);
+            hideDetails();
+        }
     }
 
     private void hideDetails() {
-        Log.v("Kocal", "hideDetails()");
-
         mDetails.animate().alpha(0f).translationY(-mDetails.getHeight()).setDuration(200).withEndAction(new Runnable() {
             @Override
             public void run() {
-                mDetails.setVisibility(View.INVISIBLE);
+                mDetails.setVisibility(View.GONE);
             }
         });
     }
 
     private void showDetails() {
-        Log.v("Kocal", "showDetails()");
         mDetails.setVisibility(View.VISIBLE);
         mDetails.animate().alpha(1f).translationY(0).setDuration(200);
     }
@@ -169,6 +172,10 @@ public class EarthquakeActivity extends AppCompatActivity implements OnMapReadyC
         this.menu = menu;
         iconMore = getResources().getDrawable(R.drawable.ic_expand_more, null);
         iconLess = getResources().getDrawable(R.drawable.ic_expand_less, null);
+
+        mDetails.setTranslationY(-mDetails.getHeight());
+        mDetails.setAlpha(0f);
+        mDetails.setVisibility(View.GONE);
         return true;
     }
 
@@ -180,14 +187,7 @@ public class EarthquakeActivity extends AppCompatActivity implements OnMapReadyC
                 finish();
                 return true;
             case R.id.action_show_details:
-                if (mDetails.getVisibility() == View.INVISIBLE) {
-                    menu.getItem(0).setIcon(iconLess);
-                    showDetails();
-                } else {
-                    menu.getItem(0).setIcon(iconMore);
-                    hideDetails();
-                }
-
+                toggleDetails();
                 return true;
         }
 
