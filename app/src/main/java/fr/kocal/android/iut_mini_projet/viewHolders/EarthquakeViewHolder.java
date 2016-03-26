@@ -1,5 +1,6 @@
 package fr.kocal.android.iut_mini_projet.viewHolders;
 
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
@@ -10,5 +11,6 @@ public class EarthquakeViewHolder {
     public TextView mPlace;
     public TextView mDate;
     public TextView mMagnitude;
+    public ImageView mAlertLevel;
     public ToggleButton mFavorite;
 }

@@ -1,10 +1,12 @@
 package fr.kocal.android.iut_mini_projet.adapters;
 
 import android.content.Context;
+import android.graphics.PorterDuff;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
@@ -12,7 +14,6 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
 
-import fr.kocal.android.iut_mini_projet.AlertLevel;
 import fr.kocal.android.iut_mini_projet.Earthquake;
 import fr.kocal.android.iut_mini_projet.R;
 import fr.kocal.android.iut_mini_projet.viewHolders.EarthquakeViewHolder;
@@ -44,6 +45,7 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
         viewHolder.mPlace = (TextView) view.findViewById(R.id.place);
         viewHolder.mDate = (TextView) view.findViewById(R.id.date);
         viewHolder.mMagnitude = (TextView) view.findViewById(R.id.magnitude);
+        viewHolder.mAlertLevel = (ImageView) view.findViewById(R.id.alertLevel);
         viewHolder.mFavorite = (ToggleButton) view.findViewById(R.id.buttonFavorite);
 
         Earthquake earthquake = getItem(position);
@@ -59,7 +61,7 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
         viewHolder.mPlace.setText(earthquake.getPlace());
         viewHolder.mDate.setText(dateString);
         viewHolder.mMagnitude.setText(magnitudeString);
-        view.setBackgroundResource(earthquake.getAlertLevel().getColorId());
+        viewHolder.mAlertLevel.getDrawable().setColorFilter(getContext().getColor(earthquake.getAlertLevel().getColorId()), PorterDuff.Mode.MULTIPLY);
         viewHolder.mFavorite.setChecked(false);
 
         return view;
