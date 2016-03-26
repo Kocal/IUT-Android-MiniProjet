@@ -8,7 +8,7 @@ public enum AlertLevel {
     GREEN(R.color.alertGreen),
     YELLOW(R.color.alertYellow),
     RED(R.color.alertRed),
-    NO_COLOR(0);
+    NO_COLOR(R.color.alertNone);
 
     /**
      * Couleur associée au level

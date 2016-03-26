@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ripple xmlns:android="http://schemas.android.com/apk/res/android" android:color="@android:color/darker_gray">
+    <item android:id="@android:id/mask">
+        <shape android:shape="oval">
+            <!-- La couleur ne sert à rien, c'est pour -->
+            <solid android:color="@android:color/holo_red_dark"></solid>
+        </shape>
+    </item>
+
+    <item>
+        <selector>
+            <item android:state_checked="true" android:drawable="@drawable/ic_star"/>
+            <item android:state_checked="false" android:drawable="@drawable/ic_star_border"/>
+        </selector>
+    </item>
+</ripple>

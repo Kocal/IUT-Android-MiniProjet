@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -44,6 +45,7 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
         viewHolder.mDate = (TextView) view.findViewById(R.id.date);
         viewHolder.mMagnitude = (TextView) view.findViewById(R.id.magnitude);
 //        viewHolder.mCoordinates = (TextView) view.findViewById(R.id.coordinates);
+        viewHolder.mFavorite = (ToggleButton) view.findViewById(R.id.buttonFavorite);
 
         Earthquake earthquake = getItem(position);
 
@@ -64,10 +66,8 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
         viewHolder.mDate.setText(dateString);
         viewHolder.mMagnitude.setText(magnitudeString);
 //        viewHolder.mCoordinates.setText(coordinatesString);
-
-        if (earthquake.getAlertLevel() != AlertLevel.NO_COLOR) {
-            view.setBackgroundResource(earthquake.getAlertLevel().getColorId());
-        }
+        view.setBackgroundResource(earthquake.getAlertLevel().getColorId());
+        viewHolder.mFavorite.setChecked(false);
 
         return view;
     }
