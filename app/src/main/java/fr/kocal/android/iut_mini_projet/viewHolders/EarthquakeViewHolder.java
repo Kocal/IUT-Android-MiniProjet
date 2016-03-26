@@ -10,6 +10,5 @@ public class EarthquakeViewHolder {
     public TextView mPlace;
     public TextView mDate;
     public TextView mMagnitude;
-    //    public TextView mCoordinates;
     public ToggleButton mFavorite;
 }

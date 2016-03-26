@@ -44,7 +44,6 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
         viewHolder.mPlace = (TextView) view.findViewById(R.id.place);
         viewHolder.mDate = (TextView) view.findViewById(R.id.date);
         viewHolder.mMagnitude = (TextView) view.findViewById(R.id.magnitude);
-//        viewHolder.mCoordinates = (TextView) view.findViewById(R.id.coordinates);
         viewHolder.mFavorite = (ToggleButton) view.findViewById(R.id.buttonFavorite);
 
         Earthquake earthquake = getItem(position);
@@ -57,15 +56,9 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
         // Formatage de la magnitude
         String magnitudeString = String.format(getContext().getString(R.string.magnitude), earthquake.getMagnitude());
 
-        // Formatage des coordonnées
-//        Double[] coordinates = earthquake.getCoordinates();
-//        String coordinatesString = String.format(getContext().getString(R.string.coordinates),
-//                coordinates[0], coordinates[1]);
-
         viewHolder.mPlace.setText(earthquake.getPlace());
         viewHolder.mDate.setText(dateString);
         viewHolder.mMagnitude.setText(magnitudeString);
-//        viewHolder.mCoordinates.setText(coordinatesString);
         view.setBackgroundResource(earthquake.getAlertLevel().getColorId());
         viewHolder.mFavorite.setChecked(false);
 
