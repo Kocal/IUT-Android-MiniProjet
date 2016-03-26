@@ -21,6 +21,9 @@ import fr.kocal.android.iut_mini_projet.R;
 
 public class ShowOnMaps extends AppCompatActivity implements OnMapReadyCallback {
 
+    /**
+     * Les tremblements de terre
+     */
     ArrayList<Earthquake> earthquakes;
 
     /**
@@ -44,6 +47,9 @@ public class ShowOnMaps extends AppCompatActivity implements OnMapReadyCallback 
         }).run();
     }
 
+    /**
+     * Initialise la toolbar
+     */
     private void initToolbar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -51,16 +57,17 @@ public class ShowOnMaps extends AppCompatActivity implements OnMapReadyCallback 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
+    /**
+     * Initialise la map Google Maps
+     */
     private void initMaps() {
         fMap = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        fMap.getView().setVisibility(View.INVISIBLE);
         fMap.getMapAsync(this);
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        fMap.getView().setVisibility(View.VISIBLE);
 
         for (Earthquake earthquake : earthquakes) {
             Double[] coordinates = earthquake.getCoordinates();

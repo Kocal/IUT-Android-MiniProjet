@@ -42,11 +42,6 @@ public class MainActivity extends AppCompatActivity {
      */
     ListView mListView;
 
-    /**
-     * Pour refresh la liste des tremblements de terre
-     */
-    SwipeRefreshLayout swipeContainer;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,7 +57,6 @@ public class MainActivity extends AppCompatActivity {
 
         updateToolbarTitle();
         initListView();
-        initSwipeRefresh();
     }
 
     /**
@@ -75,7 +69,6 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Met à jour le titre de la toolbar.
-     * <p>
      * Soit on récupère le titre du JSON, soit on affiche un titre par défaut
      */
     private void updateToolbarTitle() {
@@ -174,42 +167,13 @@ public class MainActivity extends AppCompatActivity {
         return earthquakes;
     }
 
+    /**
+     * Affiche tous les tremblements sur une maps
+     */
     private void displayOnMap() {
         Intent i = new Intent(MainActivity.this, ShowOnMaps.class);
         i.putExtra("earthquakes", earthquakes);
         startActivity(i);
-    }
-
-    private void initSwipeRefresh() {
-        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
-
-        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                new AsyncDownloader<JSONObject>(JSONObject.class, new OnContentDownloaded<JSONObject>() {
-                    @Override
-                    public void onDownloaded(Error error, JSONObject jsonObject) {
-
-                        swipeContainer.setRefreshing(false);
-
-                        if(error != null) {
-                            Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-
-                        if(jsonObject != null) {
-                            json = jsonObject;
-                            initListView();
-                        }
-                    }
-                }).execute("http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_month.geojson");
-            }
-        });
-
-        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
-                android.R.color.holo_green_light,
-                android.R.color.holo_orange_light,
-                android.R.color.holo_red_light);
     }
 
     @Override

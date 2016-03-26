@@ -32,7 +32,7 @@ import fr.kocal.android.iut_mini_projet.R;
 public class EarthquakeActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     /**
-     * Menu de l'ActionBar, on modifiera l'icone d'un des items
+     * Menu de l'ActionBar, on modifiera ensuite l'icone de l'item action_show_more
      */
     Menu menu;
     Drawable iconMore;
@@ -53,7 +53,7 @@ public class EarthquakeActivity extends AppCompatActivity implements OnMapReadyC
      */
     private CardView mDetails;
     private Button mMoreDetails;
-    private TextView mLocalisation, mMagnitude, mDate, mUrl;
+    private TextView mLocalisation, mMagnitude, mDate;
 
     /**
      * Map Google Maps ;-))
@@ -79,6 +79,9 @@ public class EarthquakeActivity extends AppCompatActivity implements OnMapReadyC
         initMaps();
     }
 
+    /**
+     * Initialise la barre d'action de l'activity
+     */
     private void initToolbar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -86,18 +89,26 @@ public class EarthquakeActivity extends AppCompatActivity implements OnMapReadyC
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
+    /**
+     * Charge la map Google Maps
+     */
     private void initMaps() {
         fMap = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         fMap.getMapAsync(this);
     }
 
+    /**
+     * Initialisation et affichage des valeurs du tremblement de terre
+     */
     private void initValues() {
         mDetails = (CardView) findViewById(R.id.card_details);
         mLocalisation = (TextView) findViewById(R.id.localisation);
         mMagnitude = (TextView) findViewById(R.id.magnitude);
         mDate = (TextView) findViewById(R.id.date);
-        mUrl = (TextView) findViewById(R.id.url);
         mMoreDetails = (Button) findViewById(R.id.buttonMoreDetails);
+
+        // Sinon le panneau des détails est visible avant que la maps charge
+        mDetails.setAlpha(0f);
 
         // Formatage des coordonnées
         Double[] coordinates = earthquake.getCoordinates();
@@ -115,7 +126,7 @@ public class EarthquakeActivity extends AppCompatActivity implements OnMapReadyC
         // Url
         sUrl = earthquake.getUrl();
 
-        // Création de l'intent pour le button
+        // Création de l'intent pour le bouton moreDetails
         final Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(sUrl));
 
@@ -123,7 +134,7 @@ public class EarthquakeActivity extends AppCompatActivity implements OnMapReadyC
         mLocalisation.setText(sLocalisation);
         mMagnitude.setText(sMagnitude);
         mDate.setText(sDate);
-//        mUrl.setText(sUrl);
+
         mMoreDetails.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -132,6 +143,9 @@ public class EarthquakeActivity extends AppCompatActivity implements OnMapReadyC
         });
     }
 
+    /**
+     * Inverse l'état de visibilité de la zone des détails, ainsi que de l'icone associée
+     */
     private void toggleDetails() {
         if (mDetails.getVisibility() == View.GONE) {
             menu.getItem(0).setIcon(iconLess);
@@ -142,6 +156,9 @@ public class EarthquakeActivity extends AppCompatActivity implements OnMapReadyC
         }
     }
 
+    /**
+     * Cache la zone des détails
+     */
     private void hideDetails() {
         mDetails.animate().alpha(0f).translationY(-mDetails.getHeight()).setDuration(200).withEndAction(new Runnable() {
             @Override
@@ -151,6 +168,9 @@ public class EarthquakeActivity extends AppCompatActivity implements OnMapReadyC
         });
     }
 
+    /**
+     * Affiche la zone des détails
+     */
     private void showDetails() {
         mDetails.setVisibility(View.VISIBLE);
         mDetails.animate().alpha(1f).translationY(0).setDuration(200);
@@ -163,21 +183,22 @@ public class EarthquakeActivity extends AppCompatActivity implements OnMapReadyC
         Double[] coordinates = earthquake.getCoordinates();
         LatLng place = new LatLng(coordinates[1], coordinates[0]);
 
-        mMap.addMarker(new MarkerOptions().position(place));
+        mMap.addMarker(new MarkerOptions().position(place).snippet(earthquake.getPlace()).snippet(sLocalisation));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(place, mMap.getMinZoomLevel()));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(4));
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_earthquake, menu);
         this.menu = menu;
+        getMenuInflater().inflate(R.menu.menu_earthquake, this.menu);
+
         iconMore = getResources().getDrawable(R.drawable.ic_expand_more, null);
         iconLess = getResources().getDrawable(R.drawable.ic_expand_less, null);
 
         mDetails.setTranslationY(-mDetails.getHeight());
-        mDetails.setAlpha(0f);
         mDetails.setVisibility(View.GONE);
+
         return true;
     }
 
