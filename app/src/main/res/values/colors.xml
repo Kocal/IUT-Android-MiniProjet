@@ -10,8 +10,8 @@
 
     <color name="black_overlay">#66000000</color>
     <color name="colorWhite">#ffffff</color>
-    <color name="alertGreen">#b9f6ca</color>
-    <color name="alertYellow">#ffff8d</color>
-    <color name="alertRed">#ffab91</color>
-    <color name="alertNone">#f0f0f0</color>
+    <color name="alertGreen">#ff00e676</color>
+    <color name="alertYellow">#ffffea00</color>
+    <color name="alertRed">#ffff3d00</color>
+    <color name="alertNone">#e0e0e0</color>
 </resources>
