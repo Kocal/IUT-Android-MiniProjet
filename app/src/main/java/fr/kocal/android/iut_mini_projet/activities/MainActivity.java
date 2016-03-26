@@ -2,7 +2,6 @@ package fr.kocal.android.iut_mini_projet.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -17,14 +16,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.logging.ErrorManager;
 
 import fr.kocal.android.iut_mini_projet.AlertLevel;
 import fr.kocal.android.iut_mini_projet.Earthquake;
 import fr.kocal.android.iut_mini_projet.R;
 import fr.kocal.android.iut_mini_projet.adapters.EarthquakeAdapter;
-import fr.kocal.android.iut_mini_projet.asyncTasks.AsyncDownloader;
-import fr.kocal.android.iut_mini_projet.eventListeners.OnContentDownloaded;
 
 public class MainActivity extends AppCompatActivity {
     /**
