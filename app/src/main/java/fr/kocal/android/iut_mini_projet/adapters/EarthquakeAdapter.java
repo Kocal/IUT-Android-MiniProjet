@@ -2,6 +2,7 @@ package fr.kocal.android.iut_mini_projet.adapters;
 
 import android.content.Context;
 import android.graphics.PorterDuff;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,39 +32,51 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        View view = convertView;
+        View row = convertView;
+        EarthquakeViewHolder viewHolder = new EarthquakeViewHolder();
 
-        if (convertView == null) {
+        if (row == null) {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-            view = inflater.inflate(R.layout.listview_row_earthquake, null);
-            viewHolder = new EarthquakeViewHolder();
+            row = inflater.inflate(R.layout.listview_row_earthquake, parent, false);
+
+            viewHolder.mPlace = (TextView) row.findViewById(R.id.place);
+            viewHolder.mDate = (TextView) row.findViewById(R.id.date);
+            viewHolder.mMagnitude = (TextView) row.findViewById(R.id.magnitude);
+            viewHolder.mAlertLevel = (ImageView) row.findViewById(R.id.alertLevel);
+            viewHolder.mFavorite = (ToggleButton) row.findViewById(R.id.buttonFavorite);
+            row.setTag(viewHolder);
         } else {
-            convertView.setTag(viewHolder);
-            view = convertView;
+            viewHolder = (EarthquakeViewHolder) row.getTag();
         }
 
-        viewHolder.mPlace = (TextView) view.findViewById(R.id.place);
-        viewHolder.mDate = (TextView) view.findViewById(R.id.date);
-        viewHolder.mMagnitude = (TextView) view.findViewById(R.id.magnitude);
-        viewHolder.mAlertLevel = (ImageView) view.findViewById(R.id.alertLevel);
-        viewHolder.mFavorite = (ToggleButton) view.findViewById(R.id.buttonFavorite);
+        final Earthquake earthquake = getItem(position);
+        final EarthquakeViewHolder finalViewHolder = viewHolder;
 
-        Earthquake earthquake = getItem(position);
+        if(earthquake != null) {
+            // Formatage de la date
+            Date date = new Date(earthquake.getTime());
+            DateFormat dateFormat = DateFormat.getDateInstance();
+            String dateString = dateFormat.format(date);
 
-        // Formatage de la date
-        Date date = new Date(earthquake.getTime());
-        DateFormat dateFormat = DateFormat.getDateInstance();
-        String dateString = dateFormat.format(date);
+            // Formatage de la magnitude
+            String magnitudeString = String.format(getContext().getString(R.string.magnitude), earthquake.getMagnitude());
 
-        // Formatage de la magnitude
-        String magnitudeString = String.format(getContext().getString(R.string.magnitude), earthquake.getMagnitude());
+            viewHolder.mPlace.setText(earthquake.getPlace());
+            viewHolder.mDate.setText(dateString);
+            viewHolder.mMagnitude.setText(magnitudeString);
+            viewHolder.mAlertLevel.getDrawable().setColorFilter(getContext().getColor(earthquake.getAlertLevel().getColorId()), PorterDuff.Mode.MULTIPLY);
+            viewHolder.mFavorite.setChecked(earthquake.isInFavorite());
+            viewHolder.mFavorite.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    boolean inFavorite = earthquake.isInFavorite();
+                    finalViewHolder.mFavorite.setChecked(!inFavorite);
+                    earthquake.setInFavorite(!inFavorite);
+                    Log.v("Kocal", "EQ : " + earthquake.getPlace());
+                }
+            });
+        }
 
-        viewHolder.mPlace.setText(earthquake.getPlace());
-        viewHolder.mDate.setText(dateString);
-        viewHolder.mMagnitude.setText(magnitudeString);
-        viewHolder.mAlertLevel.getDrawable().setColorFilter(getContext().getColor(earthquake.getAlertLevel().getColorId()), PorterDuff.Mode.MULTIPLY);
-        viewHolder.mFavorite.setChecked(false);
-
-        return view;
+        return row;
     }
 }

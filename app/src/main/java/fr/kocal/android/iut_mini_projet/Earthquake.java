@@ -37,6 +37,11 @@ public class Earthquake implements Serializable {
     private double magnitude;
 
     /**
+     * Se trouve dans les favoris ou pas
+     */
+    private boolean inFavorite;
+
+    /**
      * Niveau d'alerte
      */
     private AlertLevel alertLevel;
@@ -173,6 +178,23 @@ public class Earthquake implements Serializable {
     public void setDetailsUrl(String detailsUrl) {
         this.detailsUrl = detailsUrl;
     }
+
+    /**
+     * Met oui ou non le tremblement de terre en favoris
+     * @param inFavorite
+     */
+    public void setInFavorite(boolean inFavorite) {
+        this.inFavorite = inFavorite;
+    }
+
+    /**
+     * Retourne true ou false selon si le tremblement terre est en
+     * @return
+     */
+    public boolean isInFavorite() {
+        return inFavorite;
+    }
+
 
     @Override
     public String toString() {
