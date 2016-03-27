@@ -229,6 +229,12 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_display_on_map:
                 displayOnMap();
                 return true;
+            case R.id.action_display_only_favorites:
+                if(item.isChecked()) {
+                    item.setChecked(false);
+                } else {
+                    item.setChecked(true);
+                }
         }
 
         return super.onOptionsItemSelected(item);

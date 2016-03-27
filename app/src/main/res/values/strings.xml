@@ -24,4 +24,6 @@
     <string name="splashMessageMapCreation">Connexion à l\'API Google Maps</string>
     <string name="splashMessageMapCreationSuccess">Connexion à l\'API Google Maps réussie</string>
     <string name="splashMessageMapCreationFail">Connexion à l\'API Google Maps échouée</string>
+    <string name="action_display_on_map">Afficher sur une carte</string>
+    <string name="action_display_only_favorites">Afficher uniquement les favoris</string>
 </resources>

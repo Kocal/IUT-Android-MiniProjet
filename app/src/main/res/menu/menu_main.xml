@@ -7,8 +7,17 @@
         android:id="@+id/action_display_on_map"
         android:icon="@drawable/ic_map"
         android:orderInCategory="200"
-        android:title="Afficher sur une carte"
+        android:title="@string/action_display_on_map"
         app:showAsAction="ifRoom" />
+
+    <group android:checkableBehavior="all">
+
+        <item
+            android:id="@+id/action_display_only_favorites"
+            android:title="@string/action_display_only_favorites"
+            app:showAsAction="never">
+        </item>
+    </group>
 
     <item
         android:id="@+id/action_settings"
