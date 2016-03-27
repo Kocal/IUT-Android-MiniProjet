@@ -79,6 +79,7 @@ public class SplashScreenActivity extends AppCompatActivity {
 
     /**
      * Vérifie la connectivité à internet
+     *
      * @return boolean
      */
     private boolean hasInternetConnection() {
@@ -97,12 +98,12 @@ public class SplashScreenActivity extends AppCompatActivity {
         new AsyncDownloader<>(JSONObject.class, new OnContentDownloaded<JSONObject>() {
             @Override
             public void onDownloaded(Error error, JSONObject jsonObject) {
-                if(error != null) {
+                if (error != null) {
                     Toast.makeText(SplashScreenActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                if(jsonObject == null) {
+                if (jsonObject == null) {
                     mLoaderMessage.setText(getString(R.string.splashMessageFetchLastEarthquakesError));
                     return;
                 }
@@ -114,13 +115,13 @@ public class SplashScreenActivity extends AppCompatActivity {
 
     /**
      * Lance la MainActivity en lui passant du JSON
+     *
      * @param jsonObject
      */
     public void launchMainActivity(final JSONObject jsonObject) {
         final Intent i = new Intent(SplashScreenActivity.this, MainActivity.class);
 
         mLoaderMessage.setText(getString(R.string.splashMessageFetchLastEarthquakesSuccess));
-
         mLoaderMessage.setText(getString(R.string.splashMessageMapCreation));
 
         // On initialise une map vide
