@@ -1,11 +1,14 @@
 package fr.kocal.android.iut_mini_projet.activities;
 
+import android.app.SearchManager;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -45,6 +48,10 @@ public class MainActivity extends AppCompatActivity {
      * Liste les tremblements de terre
      */
     ListView mListView;
+    /**
+     * Adapter associé à la listView mListView;
+     */
+    EarthquakeAdapter earthquakeAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
     private void initListView() {
         mListView = (ListView) findViewById(R.id.listView);
         earthquakes = extractEarthquakesFromJson();
-        EarthquakeAdapter earthquakeAdapter = new EarthquakeAdapter(MainActivity.this, earthquakes, dbReadable);
+        earthquakeAdapter = new EarthquakeAdapter(MainActivity.this, earthquakes, dbReadable);
 
         mListView = (ListView) findViewById(R.id.listView);
         mListView.setAdapter(earthquakeAdapter);
@@ -213,6 +220,24 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+
+        SearchManager manager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView search = (SearchView) menu.findItem(R.id.action_search).getActionView();
+
+        search.setSearchableInfo(manager.getSearchableInfo(getComponentName()));
+        search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String query) {
+                earthquakeAdapter.getFilter().filter(query);
+                return true;
+            }
+        });
+
         return true;
     }
 
@@ -230,7 +255,7 @@ public class MainActivity extends AppCompatActivity {
                 displayOnMap();
                 return true;
             case R.id.action_display_only_favorites:
-                if(item.isChecked()) {
+                if (item.isChecked()) {
                     item.setChecked(false);
                 } else {
                     item.setChecked(true);
