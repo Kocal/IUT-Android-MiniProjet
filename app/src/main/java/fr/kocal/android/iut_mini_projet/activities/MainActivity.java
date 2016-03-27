@@ -257,8 +257,10 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_display_only_favorites:
                 if (item.isChecked()) {
                     item.setChecked(false);
+                    earthquakeAdapter.getFavoriteFilter().filter(earthquakeAdapter.DISPLAY_ALL);
                 } else {
                     item.setChecked(true);
+                    earthquakeAdapter.getFavoriteFilter().filter(earthquakeAdapter.DISPLAY_ONLY_FAVORITE);
                 }
         }
 

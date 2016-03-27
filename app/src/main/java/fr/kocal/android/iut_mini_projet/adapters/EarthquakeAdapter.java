@@ -3,18 +3,21 @@ package fr.kocal.android.iut_mini_projet.adapters;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Filter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import java.text.DateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
 import fr.kocal.android.iut_mini_projet.Earthquake;
 import fr.kocal.android.iut_mini_projet.R;
@@ -26,12 +29,21 @@ import fr.kocal.android.iut_mini_projet.viewHolders.EarthquakeViewHolder;
  */
 public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
 
+    public static final CharSequence DISPLAY_ALL = "all";
+    public static final CharSequence DISPLAY_ONLY_FAVORITE = "only_favorite";
+
     EarthquakeViewHolder viewHolder = null;
 
+    // Sauvegarde interne des earthquakes
+    private ArrayList<Earthquake> _earthquakes;
+
+    ArrayList<Earthquake> earthquakes;
     SQLiteDatabase dbReadable;
 
-    public EarthquakeAdapter(Context context, List<Earthquake> objects, SQLiteDatabase dbReadable) {
+    public EarthquakeAdapter(Context context, ArrayList<Earthquake> objects, SQLiteDatabase dbReadable) {
         super(context, 0, objects);
+        this._earthquakes = (ArrayList<Earthquake>) objects.clone();
+        this.earthquakes = objects;
         this.dbReadable = dbReadable;
     }
 
@@ -69,7 +81,7 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
             viewHolder.mPlace.setText(earthquake.getPlace());
             viewHolder.mDate.setText(dateString);
             viewHolder.mMagnitude.setText(magnitudeString);
-            viewHolder.mAlertLevel.getDrawable().setColorFilter(getContext().getColor(earthquake.getAlertLevel().getColorId()), PorterDuff.Mode.MULTIPLY);
+            viewHolder.mAlertLevel.getDrawable().setColorFilter(Color.argb(128, 255, 255, 0), PorterDuff.Mode.MULTIPLY);
             viewHolder.mFavorite.setChecked(earthquake.isInFavorite());
             viewHolder.mFavorite.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -92,5 +104,47 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
         }
 
         return row;
+    }
+
+    public Filter getFavoriteFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+                FilterResults filterResults = new FilterResults();
+                ArrayList<Earthquake> tmp = new ArrayList<>();
+                Earthquake earthquake;
+
+                if (constraint != null && _earthquakes != null) {
+                    for (int i = 0; i < _earthquakes.size(); i++) {
+                        earthquake = _earthquakes.get(i);
+
+                        if (constraint == DISPLAY_ONLY_FAVORITE) {
+                            if (earthquake.isInFavorite()) {
+                                tmp.add(earthquake);
+                            }
+                        } else if (constraint == DISPLAY_ALL) {
+                            tmp.add(earthquake);
+                        }
+                    }
+                }
+
+                filterResults.values = tmp;
+                filterResults.count = tmp.size();
+
+                return filterResults;
+            }
+
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+                earthquakes.clear();
+                earthquakes.addAll((Collection<? extends Earthquake>) results.values);
+
+                if (results.count > 0) {
+                    notifyDataSetChanged();
+                } else {
+                    notifyDataSetInvalidated();
+                }
+            }
+        };
     }
 }
