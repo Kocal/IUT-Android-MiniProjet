@@ -17,6 +17,11 @@ import fr.kocal.android.iut_mini_projet.eventListeners.OnContentDownloaded;
 public class Earthquake implements Serializable {
 
     /**
+     * Id
+     */
+    private String id;
+
+    /**
      * Lieu (nom)
      */
     private String place;
@@ -50,6 +55,14 @@ public class Earthquake implements Serializable {
 
     private String detailsUrl;
     private JSONObject details;
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getId() {
+        return id;
+    }
 
     /**
      * Retourne la magnitude

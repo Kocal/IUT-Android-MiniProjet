@@ -1,6 +1,9 @@
 package fr.kocal.android.iut_mini_projet.activities;
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -21,8 +24,13 @@ import fr.kocal.android.iut_mini_projet.AlertLevel;
 import fr.kocal.android.iut_mini_projet.Earthquake;
 import fr.kocal.android.iut_mini_projet.R;
 import fr.kocal.android.iut_mini_projet.adapters.EarthquakeAdapter;
+import fr.kocal.android.iut_mini_projet.contracts.EarthquakeContract.EarthquakeEntry;
+import fr.kocal.android.iut_mini_projet.helpers.EarthquakeDbHelper;
 
 public class MainActivity extends AppCompatActivity {
+
+    SQLiteDatabase dbReadable, dbWritable;
+
     /**
      * JSON qui contient les derniers tremblements de terre
      */
@@ -42,6 +50,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        EarthquakeDbHelper mDbHelper = new EarthquakeDbHelper(getApplicationContext(), EarthquakeDbHelper.DATABASE_NAME, null, EarthquakeDbHelper.DATABASE_VERSION);
+        dbReadable = mDbHelper.getReadableDatabase();
+        dbWritable = mDbHelper.getWritableDatabase();
 
         initToolbar();
 
@@ -100,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
     private void initListView() {
         mListView = (ListView) findViewById(R.id.listView);
         earthquakes = extractEarthquakesFromJson();
-        EarthquakeAdapter earthquakeAdapter = new EarthquakeAdapter(MainActivity.this, earthquakes);
+        EarthquakeAdapter earthquakeAdapter = new EarthquakeAdapter(MainActivity.this, earthquakes, dbReadable);
 
         mListView = (ListView) findViewById(R.id.listView);
         mListView.setAdapter(earthquakeAdapter);
@@ -146,7 +158,31 @@ public class MainActivity extends AppCompatActivity {
                 String alertString = properties.getString("alert");
                 AlertLevel alert = AlertLevel.getColor(alertString);
 
-                // :-)
+                // On récupère le fav ou non dans la bdd
+                Cursor c = dbReadable.query(EarthquakeEntry.TABLE_NAME,
+                        new String[]{EarthquakeEntry.COLUMN_NAME_ID, EarthquakeEntry.COLUMN_NAME_FAVORITE},
+                        EarthquakeEntry.COLUMN_NAME_ID + " = ?",
+                        new String[]{feature.getString("id")},
+                        null,
+                        null,
+                        null);
+
+                int isFavorite = 0;
+
+                // On a un truc dans la BDD
+                if (c != null && c.moveToFirst()) {
+                    isFavorite = c.getInt(c.getColumnIndexOrThrow(EarthquakeEntry.COLUMN_NAME_FAVORITE));
+                    c.close();
+                } else {
+                    // On a rien dans la BDD
+                    ContentValues values = new ContentValues();
+                    values.put(EarthquakeEntry.COLUMN_NAME_ID, feature.getString("id"));
+                    values.put(EarthquakeEntry.COLUMN_NAME_FAVORITE, isFavorite);
+                    dbWritable.insert(EarthquakeEntry.TABLE_NAME, null, values);
+                }
+
+                // Fill
+                earthquake.setId(feature.getString("id"));
                 earthquake.setPlace(properties.getString("place"));
                 earthquake.setMagnitude(properties.getDouble("mag"));
                 earthquake.setTime(properties.getLong("time"));
@@ -154,6 +190,7 @@ public class MainActivity extends AppCompatActivity {
                 earthquake.setDetailsUrl(properties.getString("detail"));
                 earthquake.setUrl(properties.getString("url"));
                 earthquake.setAlertLevel(alert);
+                earthquake.setInFavorite((isFavorite != 0));
                 earthquakes.add(earthquake);
             }
         } catch (JSONException e) {

@@ -1,8 +1,9 @@
 package fr.kocal.android.iut_mini_projet.adapters;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.PorterDuff;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import java.util.List;
 
 import fr.kocal.android.iut_mini_projet.Earthquake;
 import fr.kocal.android.iut_mini_projet.R;
+import fr.kocal.android.iut_mini_projet.contracts.EarthquakeContract.EarthquakeEntry;
 import fr.kocal.android.iut_mini_projet.viewHolders.EarthquakeViewHolder;
 
 /**
@@ -26,8 +28,11 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
 
     EarthquakeViewHolder viewHolder = null;
 
-    public EarthquakeAdapter(Context context, List<Earthquake> objects) {
+    SQLiteDatabase dbReadable;
+
+    public EarthquakeAdapter(Context context, List<Earthquake> objects, SQLiteDatabase dbReadable) {
         super(context, 0, objects);
+        this.dbReadable = dbReadable;
     }
 
     @Override
@@ -52,7 +57,7 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
         final Earthquake earthquake = getItem(position);
         final EarthquakeViewHolder finalViewHolder = viewHolder;
 
-        if(earthquake != null) {
+        if (earthquake != null) {
             // Formatage de la date
             Date date = new Date(earthquake.getTime());
             DateFormat dateFormat = DateFormat.getDateInstance();
@@ -70,9 +75,18 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
                 @Override
                 public void onClick(View v) {
                     boolean inFavorite = earthquake.isInFavorite();
-                    finalViewHolder.mFavorite.setChecked(!inFavorite);
+
                     earthquake.setInFavorite(!inFavorite);
-                    Log.v("Kocal", "EQ : " + earthquake.getPlace());
+                    finalViewHolder.mFavorite.setChecked(!inFavorite);
+
+                    ContentValues values = new ContentValues();
+                    values.put(EarthquakeEntry.COLUMN_NAME_FAVORITE, (inFavorite ? 0 : 1));
+
+                    dbReadable.update(EarthquakeEntry.TABLE_NAME,
+                            values,
+                            EarthquakeEntry.COLUMN_NAME_ID + " = ?",
+                            new String[]{earthquake.getId()}
+                    );
                 }
             });
         }
