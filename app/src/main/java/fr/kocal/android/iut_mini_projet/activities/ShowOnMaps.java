@@ -22,7 +22,7 @@ import fr.kocal.android.iut_mini_projet.R;
 public class ShowOnMaps extends AppCompatActivity implements OnMapReadyCallback {
 
     /**
-     * Les tremblements de terre
+     * Les tremblements de terre à afficher sur la Maps
      */
     ArrayList<Earthquake> earthquakes;
 
@@ -37,8 +37,10 @@ public class ShowOnMaps extends AppCompatActivity implements OnMapReadyCallback 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_on_maps);
 
-        initToolbar();
         earthquakes = (ArrayList<Earthquake>) getIntent().getSerializableExtra("earthquakes");
+
+        initToolbar();
+        // Un nouveau thread est useless ici puisque fMap.getMapAsync() est appelée, mais c'est au cas où
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -69,9 +71,11 @@ public class ShowOnMaps extends AppCompatActivity implements OnMapReadyCallback 
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
+        // On affiche un marker pour chaque tremblements
         for (Earthquake earthquake : earthquakes) {
             Double[] coordinates = earthquake.getCoordinates();
             LatLng place = new LatLng(coordinates[1], coordinates[0]);
+
             mMap.addMarker(new MarkerOptions().position(place).title("Tremblement de terre"));
         }
     }

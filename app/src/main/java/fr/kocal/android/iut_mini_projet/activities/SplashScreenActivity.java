@@ -2,6 +2,7 @@ package fr.kocal.android.iut_mini_projet.activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.PorterDuff;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -42,7 +43,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         initProgressBar();
         initLoaderMessage();
 
-        // On boucle afin de checker l'état de la connexion internet de l'utilisateur
+        // On check l'état de la connexion internet de l'utilisateur toutes les 3 secondes
         final Handler h = new Handler();
         h.postDelayed(new Runnable() {
             @Override
@@ -52,8 +53,7 @@ public class SplashScreenActivity extends AppCompatActivity {
                     fetchDatas();
                 } else {
                     Toast.makeText(SplashScreenActivity.this, getString(R.string.splashMessageNoConnection), Toast.LENGTH_SHORT).show();
-                    // check toutes les 2 secondes
-                    h.postDelayed(this, 2000);
+                    h.postDelayed(this, 3000);
                 }
             }
         }, 0);
@@ -64,14 +64,20 @@ public class SplashScreenActivity extends AppCompatActivity {
      */
     private void initProgressBar() {
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
-        // On veut une couleur blanche pour le loader
-        mProgressBar.getIndeterminateDrawable().setColorFilter(0xFFFFFFFF, android.graphics.PorterDuff.Mode.MULTIPLY);
+        // Couleur blanche pour le loader
+        mProgressBar.getIndeterminateDrawable().setColorFilter(0xFFFFFFFF, PorterDuff.Mode.MULTIPLY);
     }
 
+    /**
+     * Change le background de la barre de notifications
+     */
     private void setBackgroundColor() {
         getWindow().getDecorView().setBackgroundColor(getColor(R.color.colorPrimaryDark));
     }
 
+    /**
+     * Initialise le message du loader
+     */
     private void initLoaderMessage() {
         mLoaderMessage = (TextView) findViewById(R.id.loaderMessage);
         mLoaderMessage.setText(getString(R.string.splashMessageCheckConnectivity));
@@ -114,7 +120,7 @@ public class SplashScreenActivity extends AppCompatActivity {
     }
 
     /**
-     * Lance la MainActivity en lui passant du JSON
+     * Lance la MainActivity en lui passant le JSON récupéré via l'API
      *
      * @param jsonObject
      */
@@ -136,6 +142,5 @@ public class SplashScreenActivity extends AppCompatActivity {
                 finish();
             }
         });
-
     }
 }

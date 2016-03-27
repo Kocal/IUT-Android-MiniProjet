@@ -1,17 +1,9 @@
 package fr.kocal.android.iut_mini_projet;
 
-import android.util.Log;
-
-import org.json.JSONObject;
-
 import java.io.Serializable;
-import java.util.Arrays;
-
-import fr.kocal.android.iut_mini_projet.asyncTasks.AsyncDownloader;
-import fr.kocal.android.iut_mini_projet.eventListeners.OnContentDownloaded;
 
 /**
- * Created by kocal on 15/03/16.
+ * Représente un Earthquake
  */
 public class Earthquake implements Serializable {
 
@@ -50,10 +42,15 @@ public class Earthquake implements Serializable {
      */
     private AlertLevel alertLevel;
 
+    /**
+     * URL de "présentation" sur le site officiel de l'earthquake
+     */
     private String url;
 
+    /**
+     * URL des détails en JSON de l'earthquake
+     */
     private String detailsUrl;
-    private JSONObject details;
 
     public void setId(String id) {
         this.id = id;
@@ -154,26 +151,7 @@ public class Earthquake implements Serializable {
     }
 
     /**
-     * Retourne les détails du tremblement
-     *
-     * @return
-     */
-    public JSONObject getDetails() {
-        return details;
-    }
-
-    /**
-     * Assigne les détails du tremblement
-     *
-     * @param details
-     */
-    public void setDetails(JSONObject details) {
-        this.details = details;
-    }
-
-    /**
-     * TODO: Trouver à quoi ça correspond
-     *
+     *  Retourne l'URL présentant l'Earthquake sur le site officiel
      * @return
      */
     public String getUrl() {
@@ -181,7 +159,7 @@ public class Earthquake implements Serializable {
     }
 
     /**
-     * TODO: Trouver à quoi ça correspond
+     * Assigne une nouvelle URL afin de présenter l'Earthquake
      *
      * @param url
      */
@@ -223,32 +201,5 @@ public class Earthquake implements Serializable {
      */
     public boolean isInFavorite() {
         return inFavorite;
-    }
-
-
-    @Override
-    public String toString() {
-        return "Earthquake{" +
-                "magnitude=" + magnitude +
-                ", alertLevel=" + alertLevel +
-                ", place='" + place + '\'' +
-                ", coordinates=" + Arrays.toString(coordinates) +
-                ", time=" + time +
-                ", url='" + url + '\'' +
-                ", detailsUrl='" + detailsUrl + '\'' +
-                ", details=" + details +
-                '}';
-    }
-
-    /**
-     * Télécharge les détails du tremblement
-     */
-    public void downloadDetails() {
-        new AsyncDownloader<JSONObject>(JSONObject.class, new OnContentDownloaded<JSONObject>() {
-            @Override
-            public void onDownloaded(Error error, JSONObject jsonObject) {
-                Log.v("Kocal", jsonObject.toString());
-            }
-        }).execute(this.detailsUrl);
     }
 }

@@ -3,8 +3,6 @@ package fr.kocal.android.iut_mini_projet.asyncTasks;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
-import android.util.Log;
-import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,17 +15,13 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import fr.kocal.android.iut_mini_projet.activities.MainActivity;
-import fr.kocal.android.iut_mini_projet.activities.SplashScreenActivity;
 import fr.kocal.android.iut_mini_projet.eventListeners.OnContentDownloaded;
 
 /**
  * À la base j'avais deux classes AsyncImageDownloader et AsyncJsonDownloader,
  * ainsi que deux listeners OnImageDownloaded et OnJsonDownloaded.
- * <p/>
  * Avec la duplication de code et de fichiers, c'était ultra chiant et galère
  * de créer un Async${TYPE}Downloader et un On${TYPE}Downloaded pour chaque type.
- * <p/>
  * J'ai donc créé une classe AsyncDownloader qui utilise les templates de Java afin de
  * gérer plusieurs types/classes facilement (comme String, JSONObject, ...).
  */
@@ -59,6 +53,7 @@ public class AsyncDownloader<T> extends AsyncTask<String, Integer, T> {
 
     /**
      * Télécharge la ressource sur internet
+     *
      * @param params
      * @return
      */
@@ -109,6 +104,7 @@ public class AsyncDownloader<T> extends AsyncTask<String, Integer, T> {
 
     /**
      * Lit de contenu d'un InputStream
+     *
      * @param is
      * @return
      */
@@ -126,6 +122,7 @@ public class AsyncDownloader<T> extends AsyncTask<String, Integer, T> {
 
     /**
      * Lit le flux d'un InputStream de type texte
+     *
      * @param is
      * @return
      */
@@ -151,6 +148,7 @@ public class AsyncDownloader<T> extends AsyncTask<String, Integer, T> {
 
     /**
      * Lit le contenu d'un InputStream de type Image
+     *
      * @param is
      * @return
      */
@@ -171,6 +169,7 @@ public class AsyncDownloader<T> extends AsyncTask<String, Integer, T> {
 
     /**
      * Lit le flux d'un InputStream de type texte et le convertit en JSONObject
+     *
      * @param is
      * @return
      */
@@ -190,6 +189,7 @@ public class AsyncDownloader<T> extends AsyncTask<String, Integer, T> {
 
     /**
      * Exécute le callback et envoie possiblement une instance de Error ou pas
+     *
      * @param o
      */
     @Override

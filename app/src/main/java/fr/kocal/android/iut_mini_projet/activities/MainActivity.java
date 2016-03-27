@@ -38,24 +38,9 @@ import fr.kocal.android.iut_mini_projet.helpers.EarthquakeDbHelper;
 public class MainActivity extends AppCompatActivity {
 
     /**
-     * TODO: com
+     * Base de données de l'application
      */
     SQLiteDatabase dbReadable, dbWritable;
-
-    /**
-     * TODO: com
-     */
-    HashMap<Integer, String> earthquakesUrls;
-
-    /**
-     * TODO: com
-     */
-    ProgressBar mProgressBar;
-
-    /**
-     * TODO: Com
-     */
-    TextView mLogMessage;
 
     /**
      * JSON qui contient les derniers tremblements de terre
@@ -68,6 +53,11 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<Earthquake> earthquakes;
 
     /**
+     * Fait le lien entre la valeur des actions "^action_display_earthquake_past.*"
+     */
+    HashMap<Integer, String> earthquakesUrls;
+
+    /**
      * Liste les tremblements de terre
      */
     ListView mListView;
@@ -77,29 +67,47 @@ public class MainActivity extends AppCompatActivity {
      */
     EarthquakeAdapter earthquakeAdapter;
 
+    /**
+     * Loader qui s'affichera lors du chargement des tremblements
+     */
+    ProgressBar mProgressBar;
+
+    /**
+     * Message qui s'affichera lorsqu'il n'y aura aucun tremblements à afficher
+     */
+    TextView mNoEarthquakes;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mProgressBar = (ProgressBar) findViewById(R.id.loaderMain);
-        mLogMessage = (TextView) findViewById(R.id.logMessage);
+        initSomeUiElements();
+        initDatabase();
+        initToolbar();
 
+        fetchJson();
+        updateToolbarTitle();
+        initListView();
+
+        initEarthquakesUrls();
+    }
+
+    /**
+     * Initialise certains éléments graphiques
+     */
+    private void initSomeUiElements() {
+        mProgressBar = (ProgressBar) findViewById(R.id.loaderMain);
+        mNoEarthquakes = (TextView) findViewById(R.id.noEarthquakes);
+    }
+
+    /**
+     * Initialise la base de données
+     */
+    private void initDatabase() {
         EarthquakeDbHelper mDbHelper = new EarthquakeDbHelper(getApplicationContext(), EarthquakeDbHelper.DATABASE_NAME, null, EarthquakeDbHelper.DATABASE_VERSION);
         dbReadable = mDbHelper.getReadableDatabase();
         dbWritable = mDbHelper.getWritableDatabase();
-
-        initToolbar();
-
-        // Inutile puisqu'on gère ça dans le splashscreen, mais c'est au cas où :^)
-        if (!fetchJson()) {
-            Toast.makeText(MainActivity.this, "Impossible de récupérer le JSON", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        updateToolbarTitle();
-        initListView();
-        initEarthquakesUrls();
     }
 
     /**
@@ -112,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Met à jour le titre de la toolbar.
-     * Soit on récupère le titre du JSON, soit on affiche un titre par défaut
+     * Soit on affiche le titre du JSON, soit on affiche le titre par défaut
      */
     private void updateToolbarTitle() {
         try {
@@ -149,9 +157,8 @@ public class MainActivity extends AppCompatActivity {
         earthquakes = extractEarthquakesFromJson();
         earthquakeAdapter = new EarthquakeAdapter(MainActivity.this, earthquakes, dbReadable);
 
-        mListView = (ListView) findViewById(R.id.listView);
         mListView.setAdapter(earthquakeAdapter);
-        mListView.setFastScrollEnabled(true);
+        mListView.setFastScrollEnabled(true); // GOTTA GO FAST
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -166,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Extrait les tremblements de terre sous forme d'ArrayList du JSON
      *
-     * @return ArrayList<Earthquake> les tremblements de terre
+     * @return ArrayList<Earthquake>
      */
     private ArrayList<Earthquake> extractEarthquakesFromJson() {
         ArrayList<Earthquake> earthquakes = new ArrayList<>();
@@ -176,6 +183,7 @@ public class MainActivity extends AppCompatActivity {
 
             for (int i = 0; i < features.length(); i++) {
                 Earthquake earthquake = new Earthquake();
+                int isFavorite = 0;
 
                 JSONObject feature = features.getJSONObject(i);
                 JSONObject properties = feature.getJSONObject("properties");
@@ -198,11 +206,7 @@ public class MainActivity extends AppCompatActivity {
                         new String[]{EarthquakeEntry.COLUMN_NAME_ID, EarthquakeEntry.COLUMN_NAME_FAVORITE},
                         EarthquakeEntry.COLUMN_NAME_ID + " = ?",
                         new String[]{feature.getString("id")},
-                        null,
-                        null,
-                        null);
-
-                int isFavorite = 0;
+                        null, null, null);
 
                 // On a un truc dans la BDD
                 if (c != null && c.moveToFirst()) {
@@ -216,7 +220,7 @@ public class MainActivity extends AppCompatActivity {
                     dbWritable.insert(EarthquakeEntry.TABLE_NAME, null, values);
                 }
 
-                // Fill
+                // On fill !
                 earthquake.setId(feature.getString("id"));
                 earthquake.setPlace(properties.getString("place"));
                 earthquake.setMagnitude(properties.getDouble("mag"));
@@ -226,6 +230,7 @@ public class MainActivity extends AppCompatActivity {
                 earthquake.setUrl(properties.getString("url"));
                 earthquake.setAlertLevel(alert);
                 earthquake.setInFavorite((isFavorite != 0));
+
                 earthquakes.add(earthquake);
             }
         } catch (JSONException e) {
@@ -244,23 +249,36 @@ public class MainActivity extends AppCompatActivity {
         startActivity(i);
     }
 
+    /**
+     * Récupère le JSON de l'url passée en paramètre + l'affiche dans la listView
+     *
+     * @param url
+     */
     private void fetchJsonAndDisplay(String url) {
-
-        mLogMessage.setAlpha(0f);
-        mListView.animate().alpha(0f).translationY(-mListView.getHeight());
+        // On prépare les animations
+        mNoEarthquakes.setAlpha(0f);
         mProgressBar.animate().alpha(1f);
+        mListView.animate().alpha(0f).translationY(-mListView.getHeight()).withEndAction(new Runnable() {
+            @Override
+            public void run() {
+                mListView.setTranslationY(100);
+            }
+        });
 
+        // On télécharge le JSON o/
         new AsyncDownloader<JSONObject>(JSONObject.class, new OnContentDownloaded<JSONObject>() {
             @Override
             public void onDownloaded(Error error, JSONObject jsonObject) {
+                // On a eu une erreur
                 if (error != null) {
                     Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
                     return;
                 }
-                
-                mListView.setTranslationY(100);
+
                 json = jsonObject;
 
+                // Ivre, il pensait que lancer son `earthquakeAdapter.setNewEarthquakes` dans un nouveau Thread
+                // allait régler ses problèmes de freeze de l'UI, mais sans succès :-)
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -270,8 +288,9 @@ public class MainActivity extends AppCompatActivity {
 
                         mProgressBar.animate().alpha(0f);
 
+                        // Pas de tremblements
                         if (earthquakes.size() == 0) {
-                            mLogMessage.animate().alpha(1f);
+                            mNoEarthquakes.animate().alpha(1f);
                         } else {
                             mListView.animate().alpha(1f).translationY(0);
                         }
@@ -281,6 +300,9 @@ public class MainActivity extends AppCompatActivity {
         }).execute(url);
     }
 
+    /**
+     * Hashmap bo je
+     */
     private void initEarthquakesUrls() {
         earthquakesUrls = new HashMap<>();
         earthquakesUrls.put(R.id.action_display_earthquake_past_hour_significiant, "http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_hour.geojson");
@@ -316,6 +338,7 @@ public class MainActivity extends AppCompatActivity {
         SearchManager manager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         SearchView search = (SearchView) menu.findItem(R.id.action_search).getActionView();
 
+        // Gestion de la recherche dans la listView
         search.setSearchableInfo(manager.getSearchableInfo(getComponentName()));
         search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -349,6 +372,7 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_display_on_map:
                 displayOnMap();
                 return true;
+
             case R.id.action_display_only_favorites:
                 if (item.isChecked()) {
                     item.setChecked(false);
@@ -357,6 +381,7 @@ public class MainActivity extends AppCompatActivity {
                     item.setChecked(true);
                     earthquakeAdapter.getFavoriteFilter().filter(earthquakeAdapter.DISPLAY_ONLY_FAVORITE);
                 }
+
                 return true;
         }
 

@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import fr.kocal.android.iut_mini_projet.contracts.EarthquakeContract.EarthquakeEntry;
 
 /**
- * Created by kocal on 26/03/16.
+ * Helper pour gérer la BDD Earthquake
  * https://developer.android.com/training/basics/data-storage/databases.html
  */
 public class EarthquakeDbHelper extends SQLiteOpenHelper {
@@ -18,6 +18,7 @@ public class EarthquakeDbHelper extends SQLiteOpenHelper {
     private static final String TEXT_TYPE = " TEXT";
     private static final String INTEGER_TYPE = " INTEGER";
     private static final String COMMA_SEP = ",";
+
     private static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + EarthquakeEntry.TABLE_NAME + " (" +
                     EarthquakeEntry._ID + " INTEGER PRIMARY KEY," +

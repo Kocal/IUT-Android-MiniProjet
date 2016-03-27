@@ -1,8 +1,7 @@
 package fr.kocal.android.iut_mini_projet;
 
 /**
- * Created by kocal on 20/03/16.
- * TOOD: DOC
+ * Représente le niveau d'alerte d'un earthquake
  */
 public enum AlertLevel {
     GREEN(R.color.alertGreen),
@@ -20,8 +19,7 @@ public enum AlertLevel {
     }
 
     /**
-     * Retourne la couleur associée au level
-     *
+     * Retourne la couleur correspondant au niveau d'alerte
      * @return
      */
     public int getColorId() {
@@ -29,7 +27,7 @@ public enum AlertLevel {
     }
 
     /**
-     * Retourne la couleur associée au level passé en paramètre
+     * Retourne la couleur au level correspondant au niveau d'alerte passé en paramètre
      *
      * @param level
      * @return

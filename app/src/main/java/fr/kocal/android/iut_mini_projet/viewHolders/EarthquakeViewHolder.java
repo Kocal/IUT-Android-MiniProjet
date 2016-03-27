@@ -5,7 +5,7 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 /**
- * Created by kocal on 21/03/16.
+ * ViewHolder des Earthquakes pour l'EarthquakeAdapter
  */
 public class EarthquakeViewHolder {
     public TextView mPlace;

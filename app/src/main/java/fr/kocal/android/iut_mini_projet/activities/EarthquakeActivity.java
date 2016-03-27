@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -38,17 +37,17 @@ public class EarthquakeActivity extends AppCompatActivity implements OnMapReadyC
     Drawable iconLess;
 
     /**
-     * Earthquake à afficher
+     * Earthquake qui est couramment affiché
      */
     Earthquake earthquake = null;
 
     /**
-     * Infos
+     * Infos sur l'earthquake
      */
     String sLocalisation, sMagnitude, sDate, sUrl;
 
     /**
-     * UI elements
+     * Élements graphiques
      */
     private CardView mDetails;
     private Button mMoreDetails;
@@ -122,12 +121,8 @@ public class EarthquakeActivity extends AppCompatActivity implements OnMapReadyC
         DateFormat dateFormat = DateFormat.getDateInstance();
         sDate = String.format(getString(R.string.date), dateFormat.format(date));
 
-        // Url
+        // Url ;-)
         sUrl = earthquake.getUrl();
-
-        // Création de l'intent pour le bouton moreDetails
-        final Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(Uri.parse(sUrl));
 
         // Fill
         mLocalisation.setText(sLocalisation);
@@ -137,6 +132,8 @@ public class EarthquakeActivity extends AppCompatActivity implements OnMapReadyC
         mMoreDetails.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                final Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(sUrl));
                 startActivity(intent);
             }
         });

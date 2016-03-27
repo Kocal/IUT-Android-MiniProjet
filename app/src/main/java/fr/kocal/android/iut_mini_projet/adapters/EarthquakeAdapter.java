@@ -29,15 +29,30 @@ import fr.kocal.android.iut_mini_projet.viewHolders.EarthquakeViewHolder;
  */
 public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
 
+    /**
+     * Indique au filtre de `getFavoriteFilter()`
+     */
     public static final CharSequence DISPLAY_ALL = "all";
     public static final CharSequence DISPLAY_ONLY_FAVORITE = "only_favorite";
 
+    /**
+     * TODO: Trouver un vrai commentaire
+     */
     EarthquakeViewHolder viewHolder = null;
 
-    // Sauvegarde interne des earthquakes
+    /**
+     * Sauvegarde interne des earthquakes (quand on cache/affiche les rows)
+     */
     private ArrayList<Earthquake> _earthquakes;
 
+    /**
+     * Rows affichées à l'acran
+     */
     ArrayList<Earthquake> earthquakes;
+
+    /**
+     * Base de données de l'application
+     */
     SQLiteDatabase dbReadable;
 
     public EarthquakeAdapter(Context context, ArrayList<Earthquake> objects, SQLiteDatabase dbReadable) {
@@ -50,7 +65,7 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View row = convertView;
-        EarthquakeViewHolder viewHolder = new EarthquakeViewHolder();
+        viewHolder = new EarthquakeViewHolder();
 
         if (row == null) {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
@@ -91,11 +106,11 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
                     earthquake.setInFavorite(!inFavorite);
                     finalViewHolder.mFavorite.setChecked(!inFavorite);
 
+                    // On modifie la valeur de la colonne "COLUMN_NAME_FAVORITE" dans la BDD
                     ContentValues values = new ContentValues();
                     values.put(EarthquakeEntry.COLUMN_NAME_FAVORITE, (inFavorite ? 0 : 1));
 
-                    dbReadable.update(EarthquakeEntry.TABLE_NAME,
-                            values,
+                    dbReadable.update(EarthquakeEntry.TABLE_NAME, values,
                             EarthquakeEntry.COLUMN_NAME_ID + " = ?",
                             new String[]{earthquake.getId()}
                     );
@@ -106,6 +121,10 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
         return row;
     }
 
+    /**
+     * Affiche les earthquakes favoris ou non
+     * @return
+     */
     public Filter getFavoriteFilter() {
         return new Filter() {
             @Override
@@ -118,12 +137,12 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
                     for (int i = 0; i < _earthquakes.size(); i++) {
                         earthquake = _earthquakes.get(i);
 
-                        if (constraint == DISPLAY_ONLY_FAVORITE) {
+                        if (constraint == DISPLAY_ALL) {
+                            tmp.add(earthquake);
+                        } else if (constraint == DISPLAY_ONLY_FAVORITE) {
                             if (earthquake.isInFavorite()) {
                                 tmp.add(earthquake);
                             }
-                        } else if (constraint == DISPLAY_ALL) {
-                            tmp.add(earthquake);
                         }
                     }
                 }
@@ -136,6 +155,7 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
 
             @Override
             protected void publishResults(CharSequence constraint, FilterResults results) {
+                // Reset les rows
                 earthquakes.clear();
                 earthquakes.addAll((Collection<? extends Earthquake>) results.values);
 
@@ -148,13 +168,18 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
         };
     }
 
+    /**
+     * Remplace les earthquakes de l'adapter par des nouveaux earthquakes
+     * @param eq
+     */
     public void setNewEarthquakes(final ArrayList<Earthquake> eq) {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 _earthquakes.clear();
-                _earthquakes.addAll((Collection<? extends Earthquake>) eq.clone());
                 earthquakes.clear();
+
+                _earthquakes.addAll((Collection<? extends Earthquake>) eq.clone());
                 earthquakes.addAll(eq);
                 notifyDataSetChanged();
             }
