@@ -3,8 +3,8 @@ package fr.kocal.android.iut_mini_projet.adapters;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -81,7 +81,7 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
             viewHolder.mPlace.setText(earthquake.getPlace());
             viewHolder.mDate.setText(dateString);
             viewHolder.mMagnitude.setText(magnitudeString);
-            viewHolder.mAlertLevel.getDrawable().setColorFilter(Color.argb(128, 255, 255, 0), PorterDuff.Mode.MULTIPLY);
+            viewHolder.mAlertLevel.getDrawable().setColorFilter(ContextCompat.getColor(getContext(), earthquake.getAlertLevel().getColorId()), PorterDuff.Mode.MULTIPLY);
             viewHolder.mFavorite.setChecked(earthquake.isInFavorite());
             viewHolder.mFavorite.setOnClickListener(new View.OnClickListener() {
                 @Override
