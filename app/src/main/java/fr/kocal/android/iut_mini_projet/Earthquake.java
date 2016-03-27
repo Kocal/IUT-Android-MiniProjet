@@ -1,6 +1,5 @@
 package fr.kocal.android.iut_mini_projet;
 
-import android.graphics.Bitmap;
 import android.util.Log;
 
 import org.json.JSONObject;
@@ -66,6 +65,7 @@ public class Earthquake implements Serializable {
 
     /**
      * Retourne la magnitude
+     *
      * @return
      */
     public double getMagnitude() {
@@ -74,6 +74,7 @@ public class Earthquake implements Serializable {
 
     /**
      * Assigne une nouvelle magnitude
+     *
      * @param magnitude
      */
     public void setMagnitude(double magnitude) {
@@ -82,6 +83,7 @@ public class Earthquake implements Serializable {
 
     /**
      * Retourne le niveau d'alerte
+     *
      * @return
      */
     public AlertLevel getAlertLevel() {
@@ -90,6 +92,7 @@ public class Earthquake implements Serializable {
 
     /**
      * Assigne un nouveau niveau d'alerte
+     *
      * @param alertLevel
      */
     public void setAlertLevel(AlertLevel alertLevel) {
@@ -98,6 +101,7 @@ public class Earthquake implements Serializable {
 
     /**
      * Retourne le lieu
+     *
      * @return
      */
     public String getPlace() {
@@ -106,6 +110,7 @@ public class Earthquake implements Serializable {
 
     /**
      * Assigne un nouveau lieu
+     *
      * @param place
      */
     public void setPlace(String place) {
@@ -114,6 +119,7 @@ public class Earthquake implements Serializable {
 
     /**
      * Retourne les coordonnées géographiques
+     *
      * @return
      */
     public Double[] getCoordinates() {
@@ -122,6 +128,7 @@ public class Earthquake implements Serializable {
 
     /**
      * Assigne de nouvelles coordonnées
+     *
      * @param coordinates
      */
     public void setCoordinates(Double[] coordinates) {
@@ -130,6 +137,7 @@ public class Earthquake implements Serializable {
 
     /**
      * Retourne le timestamp
+     *
      * @return
      */
     public long getTime() {
@@ -138,6 +146,7 @@ public class Earthquake implements Serializable {
 
     /**
      * Assigne un nouveau timestamp
+     *
      * @param time
      */
     public void setTime(long time) {
@@ -146,6 +155,7 @@ public class Earthquake implements Serializable {
 
     /**
      * Retourne les détails du tremblement
+     *
      * @return
      */
     public JSONObject getDetails() {
@@ -154,6 +164,7 @@ public class Earthquake implements Serializable {
 
     /**
      * Assigne les détails du tremblement
+     *
      * @param details
      */
     public void setDetails(JSONObject details) {
@@ -162,6 +173,7 @@ public class Earthquake implements Serializable {
 
     /**
      * TODO: Trouver à quoi ça correspond
+     *
      * @return
      */
     public String getUrl() {
@@ -170,6 +182,7 @@ public class Earthquake implements Serializable {
 
     /**
      * TODO: Trouver à quoi ça correspond
+     *
      * @param url
      */
     public void setUrl(String url) {
@@ -178,6 +191,7 @@ public class Earthquake implements Serializable {
 
     /**
      * Retourne l'URL pour voir les détails du tremblement
+     *
      * @return
      */
     public String getDetailsUrl() {
@@ -186,6 +200,7 @@ public class Earthquake implements Serializable {
 
     /**
      * Assigne une nouvelle URL pour voir les détails du tremblement
+     *
      * @param detailsUrl
      */
     public void setDetailsUrl(String detailsUrl) {
@@ -194,6 +209,7 @@ public class Earthquake implements Serializable {
 
     /**
      * Met oui ou non le tremblement de terre en favoris
+     *
      * @param inFavorite
      */
     public void setInFavorite(boolean inFavorite) {
@@ -202,6 +218,7 @@ public class Earthquake implements Serializable {
 
     /**
      * Retourne true ou false selon si le tremblement terre est en
+     *
      * @return
      */
     public boolean isInFavorite() {
