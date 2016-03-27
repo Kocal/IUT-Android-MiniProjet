@@ -26,4 +26,14 @@
     <string name="splashMessageMapCreationFail">Connexion à l\'API Google Maps échouée</string>
     <string name="action_display_on_map">Afficher sur une carte</string>
     <string name="action_display_only_favorites">Afficher uniquement les favoris</string>
+    <string name="earthquake_list_past_hour">Depuis une heure</string>
+    <string name="earthquake_list_past_day">Depuis un jour</string>
+    <string name="earthquake_list_past_week">Depuis une semaine</string>
+    <string name="earthquake_list_past_month">Depuis un mois</string>
+    <string name="earthquake_list_significant">Tremblements importants</string>
+    <string name="earthquake_list_magnitude_4_5">Tremblements magnitude 4.5+</string>
+    <string name="earthquake_list_magnitude_2_5">Tremblements magnitude 2.5+</string>
+    <string name="earthquake_list_magnitude_1">Tremblements magnitude 1+</string>
+    <string name="earthquake_list_all">Tous les tremblements</string>
+    <string name="no_earthquakes_to_display">Il n\'y a pas de tremblements de terre à afficher</string>
 </resources>

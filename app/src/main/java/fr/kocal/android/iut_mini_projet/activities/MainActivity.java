@@ -15,6 +15,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -22,17 +24,38 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import fr.kocal.android.iut_mini_projet.AlertLevel;
 import fr.kocal.android.iut_mini_projet.Earthquake;
 import fr.kocal.android.iut_mini_projet.R;
 import fr.kocal.android.iut_mini_projet.adapters.EarthquakeAdapter;
+import fr.kocal.android.iut_mini_projet.asyncTasks.AsyncDownloader;
 import fr.kocal.android.iut_mini_projet.contracts.EarthquakeContract.EarthquakeEntry;
+import fr.kocal.android.iut_mini_projet.eventListeners.OnContentDownloaded;
 import fr.kocal.android.iut_mini_projet.helpers.EarthquakeDbHelper;
 
 public class MainActivity extends AppCompatActivity {
 
+    /**
+     * TODO: com
+     */
     SQLiteDatabase dbReadable, dbWritable;
+
+    /**
+     * TODO: com
+     */
+    HashMap<Integer, String> earthquakesUrls;
+
+    /**
+     * TODO: com
+     */
+    ProgressBar mProgressBar;
+
+    /**
+     * TODO: Com
+     */
+    TextView mLogMessage;
 
     /**
      * JSON qui contient les derniers tremblements de terre
@@ -48,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
      * Liste les tremblements de terre
      */
     ListView mListView;
+
     /**
      * Adapter associé à la listView mListView;
      */
@@ -57,6 +81,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mProgressBar = (ProgressBar) findViewById(R.id.loaderMain);
+        mLogMessage = (TextView) findViewById(R.id.logMessage);
 
         EarthquakeDbHelper mDbHelper = new EarthquakeDbHelper(getApplicationContext(), EarthquakeDbHelper.DATABASE_NAME, null, EarthquakeDbHelper.DATABASE_VERSION);
         dbReadable = mDbHelper.getReadableDatabase();
@@ -72,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
 
         updateToolbarTitle();
         initListView();
+        initEarthquakesUrls();
     }
 
     /**
@@ -216,6 +244,70 @@ public class MainActivity extends AppCompatActivity {
         startActivity(i);
     }
 
+    private void fetchJsonAndDisplay(String url) {
+
+        mLogMessage.setAlpha(0f);
+        mListView.animate().alpha(0f).translationY(-mListView.getHeight());
+        mProgressBar.animate().alpha(1f);
+
+        new AsyncDownloader<JSONObject>(JSONObject.class, new OnContentDownloaded<JSONObject>() {
+            @Override
+            public void onDownloaded(Error error, JSONObject jsonObject) {
+                if (error != null) {
+                    Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                
+                mListView.setTranslationY(100);
+                json = jsonObject;
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        earthquakes = extractEarthquakesFromJson();
+                        earthquakeAdapter.setNewEarthquakes(earthquakes);
+                        updateToolbarTitle();
+
+                        mProgressBar.animate().alpha(0f);
+
+                        if (earthquakes.size() == 0) {
+                            mLogMessage.animate().alpha(1f);
+                        } else {
+                            mListView.animate().alpha(1f).translationY(0);
+                        }
+                    }
+                }).run();
+            }
+        }).execute(url);
+    }
+
+    private void initEarthquakesUrls() {
+        earthquakesUrls = new HashMap<>();
+        earthquakesUrls.put(R.id.action_display_earthquake_past_hour_significiant, "http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_hour.geojson");
+        earthquakesUrls.put(R.id.action_display_earthquake_past_hour_magnitude_4_5, "http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_hour.geojson");
+        earthquakesUrls.put(R.id.action_display_earthquake_past_hour_magnitude_2_5, "http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_hour.geojson");
+        earthquakesUrls.put(R.id.action_display_earthquake_past_hour_magnitude_1, "http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/1.0_hour.geojson");
+        earthquakesUrls.put(R.id.action_display_earthquake_past_hour_list_all, "http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson");
+
+        earthquakesUrls.put(R.id.action_display_earthquake_past_day_significiant, "http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_day.geojson");
+        earthquakesUrls.put(R.id.action_display_earthquake_past_day_magnitude_4_5, "http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_day.geojson");
+        earthquakesUrls.put(R.id.action_display_earthquake_past_day_magnitude_2_5, "http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_day.geojson");
+        earthquakesUrls.put(R.id.action_display_earthquake_past_day_magnitude_1, "http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/1.0_day.geojson");
+        earthquakesUrls.put(R.id.action_display_earthquake_past_day_list_all, "http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson");
+
+        earthquakesUrls.put(R.id.action_display_earthquake_past_week_significiant, "http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_week.geojson");
+        earthquakesUrls.put(R.id.action_display_earthquake_past_week_magnitude_4_5, "http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_week.geojson");
+        earthquakesUrls.put(R.id.action_display_earthquake_past_week_magnitude_2_5, "http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_week.geojson");
+        earthquakesUrls.put(R.id.action_display_earthquake_past_week_magnitude_1, "http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/1.0_week.geojson");
+        earthquakesUrls.put(R.id.action_display_earthquake_past_week_list_all, "http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson");
+
+        earthquakesUrls.put(R.id.action_display_earthquake_past_month_significiant, "http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_month.geojson");
+        earthquakesUrls.put(R.id.action_display_earthquake_past_month_magnitude_4_5, "http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_month.geojson");
+        earthquakesUrls.put(R.id.action_display_earthquake_past_month_magnitude_2_5, "http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_month.geojson");
+        earthquakesUrls.put(R.id.action_display_earthquake_past_month_magnitude_1, "http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/1.0_month.geojson");
+        earthquakesUrls.put(R.id.action_display_earthquake_past_month_list_all, "http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson");
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -248,9 +340,12 @@ public class MainActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+        if (earthquakesUrls.containsKey(id)) {
+            fetchJsonAndDisplay(earthquakesUrls.get(id));
+            return true;
+        }
+
         switch (id) {
-            case R.id.action_settings:
-                return true;
             case R.id.action_display_on_map:
                 displayOnMap();
                 return true;
@@ -262,6 +357,7 @@ public class MainActivity extends AppCompatActivity {
                     item.setChecked(true);
                     earthquakeAdapter.getFavoriteFilter().filter(earthquakeAdapter.DISPLAY_ONLY_FAVORITE);
                 }
+                return true;
         }
 
         return super.onOptionsItemSelected(item);

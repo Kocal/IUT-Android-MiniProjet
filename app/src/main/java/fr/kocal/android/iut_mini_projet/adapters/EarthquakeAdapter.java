@@ -147,4 +147,17 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
             }
         };
     }
+
+    public void setNewEarthquakes(final ArrayList<Earthquake> eq) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                _earthquakes.clear();
+                _earthquakes.addAll((Collection<? extends Earthquake>) eq.clone());
+                earthquakes.clear();
+                earthquakes.addAll(eq);
+                notifyDataSetChanged();
+            }
+        }).run();
+    }
 }

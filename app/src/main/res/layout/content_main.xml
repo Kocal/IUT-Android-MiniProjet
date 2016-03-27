@@ -15,4 +15,26 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true" />
 
+    <ProgressBar
+        android:id="@+id/loaderMain"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:alpha="0" />
+
+    <TextView
+        android:id="@+id/logMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:text="@string/no_earthquakes_to_display"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textAlignment="center"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:alpha="0" />
+
 </RelativeLayout>
