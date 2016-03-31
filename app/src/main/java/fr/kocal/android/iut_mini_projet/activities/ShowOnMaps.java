@@ -76,7 +76,10 @@ public class ShowOnMaps extends AppCompatActivity implements OnMapReadyCallback 
             Double[] coordinates = earthquake.getCoordinates();
             LatLng place = new LatLng(coordinates[1], coordinates[0]);
 
-            mMap.addMarker(new MarkerOptions().position(place).title("Tremblement de terre"));
+            String sLocalisation = String.format(getString(R.string.coordinates),
+                    coordinates[0], coordinates[1]);
+
+            mMap.addMarker(new MarkerOptions().position(place).title(earthquake.getPlace()).snippet(sLocalisation));
         }
     }
 

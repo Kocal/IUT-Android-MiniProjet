@@ -3,8 +3,10 @@ package fr.kocal.android.iut_mini_projet.adapters;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -96,7 +98,7 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
             viewHolder.mPlace.setText(earthquake.getPlace());
             viewHolder.mDate.setText(dateString);
             viewHolder.mMagnitude.setText(magnitudeString);
-            viewHolder.mAlertLevel.getDrawable().setColorFilter(ContextCompat.getColor(getContext(), earthquake.getAlertLevel().getColorId()), PorterDuff.Mode.MULTIPLY);
+            viewHolder.mAlertLevel.getDrawable().setColorFilter(magnitudeToColor(earthquake.getMagnitude()), PorterDuff.Mode.MULTIPLY);
             viewHolder.mFavorite.setChecked(earthquake.isInFavorite());
             viewHolder.mFavorite.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -112,13 +114,22 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
 
                     dbReadable.update(EarthquakeEntry.TABLE_NAME, values,
                             EarthquakeEntry.COLUMN_NAME_ID + " = ?",
-                            new String[]{earthquake.getId()}
+                            new String[]{ earthquake.getId() }
                     );
                 }
             });
         }
 
         return row;
+    }
+
+    private int magnitudeToColor(double magnitude) {
+        if(magnitude < 0) magnitude = 0;
+        if(magnitude > 9) magnitude = 9;
+
+        int componentValue = (int) (magnitude * 255 / 9);
+
+        return Color.argb(componentValue, 0, 225, 0);
     }
 
     /**

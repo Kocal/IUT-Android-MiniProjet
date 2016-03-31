@@ -125,8 +125,8 @@ public class EarthquakeActivity extends AppCompatActivity implements OnMapReadyC
         sUrl = earthquake.getUrl();
 
         // Fill
-        mLocalisation.setText(sLocalisation);
-        mMagnitude.setText(sMagnitude);
+        mLocalisation.setText("Localisation : " + sLocalisation);
+        mMagnitude.setText("Magnitude : " + sMagnitude);
         mDate.setText(sDate);
 
         mMoreDetails.setOnClickListener(new View.OnClickListener() {
@@ -179,7 +179,7 @@ public class EarthquakeActivity extends AppCompatActivity implements OnMapReadyC
         Double[] coordinates = earthquake.getCoordinates();
         LatLng place = new LatLng(coordinates[1], coordinates[0]);
 
-        mMap.addMarker(new MarkerOptions().position(place).snippet(earthquake.getPlace()).snippet(sLocalisation));
+        mMap.addMarker(new MarkerOptions().position(place).title(sLocalisation).snippet(earthquake.getPlace()));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(place, mMap.getMinZoomLevel()));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(4));
     }

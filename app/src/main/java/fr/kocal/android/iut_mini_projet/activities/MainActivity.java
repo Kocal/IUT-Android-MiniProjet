@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -278,12 +279,14 @@ public class MainActivity extends AppCompatActivity {
                 json = jsonObject;
 
                 // Ivre, il pensait que lancer son `earthquakeAdapter.setNewEarthquakes` dans un nouveau Thread
-                // allait régler ses problèmes de freeze de l'UI, mais sans succès :-)
+                // allait régler ses problèmes de freeze de l'UI lorsqu'on charge BEAUCOUP de tremblemens,
+                // mais sans succès :-)
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
                         earthquakes = extractEarthquakesFromJson();
-                        earthquakeAdapter.setNewEarthquakes(earthquakes);
+//                        earthquakeAdapter.setNewEarthquakes(earthquakes);
+                        initListView();
                         updateToolbarTitle();
 
                         mProgressBar.animate().alpha(0f);
@@ -296,8 +299,24 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 }).run();
+
             }
         }).execute(url);
+    }
+
+    /**
+     * Affiche soit les favoris soit tous les tremblements
+     *
+     * @param item
+     */
+    private void toggleFavorites(MenuItem item) {
+        if (item.isChecked()) {
+            item.setChecked(false);
+            earthquakeAdapter.getFavoriteFilter().filter(earthquakeAdapter.DISPLAY_ALL);
+        } else {
+            item.setChecked(true);
+            earthquakeAdapter.getFavoriteFilter().filter(earthquakeAdapter.DISPLAY_ONLY_FAVORITE);
+        }
     }
 
     /**
@@ -348,6 +367,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String query) {
+                Log.v("Kocal", "Search : " + query);
                 earthquakeAdapter.getFilter().filter(query);
                 return true;
             }
@@ -374,14 +394,7 @@ public class MainActivity extends AppCompatActivity {
                 return true;
 
             case R.id.action_display_only_favorites:
-                if (item.isChecked()) {
-                    item.setChecked(false);
-                    earthquakeAdapter.getFavoriteFilter().filter(earthquakeAdapter.DISPLAY_ALL);
-                } else {
-                    item.setChecked(true);
-                    earthquakeAdapter.getFavoriteFilter().filter(earthquakeAdapter.DISPLAY_ONLY_FAVORITE);
-                }
-
+                toggleFavorites(item);
                 return true;
         }
 

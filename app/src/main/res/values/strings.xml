@@ -12,9 +12,8 @@
     <string name="splashMessageFetchLastEarthquakes">Récupération des derniers tremblements de terre en cours...</string>
     <string name="splashMessageFetchLastEarthquakesSuccess">Récupération des derniers tremblements de terre terminée !</string>
     <string name="splashMessageFetchLastEarthquakesError">Un problème est survenu lors de la récupération des derniers tremblements de terre</string>
-    <!--<string name="coordinates">%1$.3f °N, %2$.3f °E depth=%3$.2f km</string>-->
-    <string name="magnitude">Magnitude : %1$.2f </string>
-    <string name="coordinates">Localisation : %1$.3f °N, %2$.3f °E</string>
+    <string name="magnitude">%1$.1f</string>
+    <string name="coordinates">%1$.3f °N, %2$.3f °E</string>
     <string name="separator"> • </string>
     <string name="about_earthquake">À propos du tremblement de terre</string>
     <string name="label_informationsGenerales">Informations générales</string>

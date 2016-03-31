@@ -127,7 +127,7 @@ public class AsyncDownloader<T> extends AsyncTask<String, Integer, T> {
      * @return
      */
     public T readPlainStream(InputStream is) {
-        BufferedReader in = new BufferedReader(new InputStreamReader(is));
+        BufferedReader in = new BufferedReader(new InputStreamReader(is), 16 * 1024);
         StringBuilder buffer = new StringBuilder();
         String line;
 
